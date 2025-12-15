@@ -10,6 +10,12 @@
     <p>Active: {{ active ? 'yes' : 'no' }}</p>
     <p>Clicks on todos: {{ clickCount }}</p>
   </div>
+  <div class="text-h6 text-weight-light">
+    osea si me gusta el backend con spring y ya estoy familiarizado aunque parezca que no, llevo 2
+    meses aprox tirando codigo y creando proyectos , desde las 9am hasta las 8pm todos esos dias
+  </div>
+
+  <div class="text-subtitle1">Dúo La Roche Posay Adios Arrugas</div>
 </template>
 
 <script setup lang="ts">
