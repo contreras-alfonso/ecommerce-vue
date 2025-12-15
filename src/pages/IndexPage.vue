@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-gutter-y-md" padding>
+  <q-page class="q-gutter-y-lg" padding>
     <example-component
       v-if="false"
       title="Example component"

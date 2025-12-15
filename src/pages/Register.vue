@@ -193,6 +193,7 @@
                 </div>
                 <div>
                   <q-btn
+                    @click="router.push('/login')"
                     flat
                     class="bg-secondary text-white q-py-md text-weight-regular full-width"
                     label="Iniciar sesión"
@@ -207,10 +208,13 @@
   </q-page>
 </template>
 <script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import InputElement from 'src/components/elements/Input.vue';
 import SelectElement from 'src/components/elements/Select.vue';
 import type { SelectOption } from 'src/types/select.option';
-import { ref } from 'vue';
+
+const router = useRouter();
 
 const step = ref(1);
 const done1 = ref(true);

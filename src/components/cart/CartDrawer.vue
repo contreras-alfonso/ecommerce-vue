@@ -65,7 +65,7 @@ import CartProductCard from './CartProductCard.vue';
 import type { Product } from 'src/types/product';
 import { uid } from 'quasar';
 
-const show = ref(true);
+const show = ref(false);
 const products = ref<Product[]>([
   {
     id: uid(),

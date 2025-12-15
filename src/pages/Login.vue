@@ -66,6 +66,7 @@
                 </div>
                 <div>
                   <q-btn
+                    @click="router.push('/register')"
                     flat
                     class="bg-secondary text-white q-py-md text-weight-regular full-width"
                     label="Registrarse"
@@ -80,8 +81,11 @@
   </q-page>
 </template>
 <script setup lang="ts">
-import InputElement from 'src/components/elements/Input.vue';
+import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import InputElement from 'src/components/elements/Input.vue';
+
+const router = useRouter();
 
 const login = ref({
   email: '',

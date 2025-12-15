@@ -3,10 +3,7 @@
     <div class="row items-center justify-center">
       <div class="col-sm-10 col-12 q-gutter-y-md">
         <div>
-          <q-breadcrumbs separator="/" class="text-secondary text-caption" active-color="grey-6">
-            <q-breadcrumbs-el class="cursor-pointer hover-primary" label="Inicio" />
-            <q-breadcrumbs-el label="Dúo Espumoso 473ml Cerave" />
-          </q-breadcrumbs>
+          <BreadCrum title="Dúo Espumoso 473ml Cerave" />
         </div>
 
         <div class="row q-col-gutter-x-lg">
@@ -153,10 +150,12 @@
   </q-page>
 </template>
 <script setup lang="ts">
+import { ref } from 'vue';
 import ProductDetailSlider from 'src/components/products/ProductDetailSlider.vue';
 import InputElement from 'src/components/elements/Input.vue';
-import { ref } from 'vue';
+import BreadCrum from 'src/components/shared/BreadCrum.vue';
 import type { Benefit } from 'src/types/benefit';
+
 const characteristics = ref(`
 <div><br></div>
 

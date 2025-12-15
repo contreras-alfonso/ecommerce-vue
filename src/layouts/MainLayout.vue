@@ -1,17 +1,12 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-white" bordered>
-      <!-- <q-toolbar> -->
-      <!-- <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" /> -->
-
-      <!-- <q-toolbar-title> Quasar App </q-toolbar-title> -->
-
-      <!-- <div>Quasar v{{ $q.version }}</div> -->
-      <!-- </q-toolbar> -->
       <div class="column">
-        <div class="row items-center full-width q-py-sm q-px-md">
+        <div class="row items-center full-width q-px-md">
           <div class="col">
             <q-img
+              @click="router.push('/')"
+              class="cursor-pointer"
               spinner-color="grey"
               spinner-size="sm"
               style="width: 100px"
@@ -19,83 +14,45 @@
             />
           </div>
 
-          <div class="col" v-if="!$q.screen.lt.md">
-            <div class="row q-col-gutter-xs justify-center">
+          <div class="col" v-if="$q.screen.gt.sm">
+            <div class="row justify-center">
               <div v-for="(page, index) in list.nav" :key="index">
-                <router-link :to="page.url" custom v-slot="{ isActive }">
-                  <q-btn
-                    flat
-                    rounded
-                    :label="page.title"
-                    class="text-capitalize"
-                    :class="{ 'text-primary': isActive, 'text-black': !isActive }"
-                  />
-                </router-link>
+                <q-btn
+                  flat
+                  :label="page.title"
+                  class="text-capitalize fw-400 q-py-md"
+                  :class="{
+                    'text-primary': currentCategoryActive === page.id,
+                    'text-black': currentCategoryActive !== page.id,
+                  }"
+                  @mouseover="((currentCategoryActive = page.id), (activeMenu = true))"
+                />
               </div>
             </div>
           </div>
-
-          <!-- <div class="col">
-            <div class="flex flex-center">
-              <InputElement
-                style="width: 400px"
-                dense
-                :model-value="search"
-                @update:model-value="(val) => (search = val)"
-                placeholder="Buscar"
-                icon="search"
-                icon-color="grey"
-                :outlined="true"
-                :length-required="11"
-                time="1500"
-                bg-color="grey-2"
-                is-rounded
-                no-border
-                input-xl
-                :is-loading="loading.search"
-              />
-            </div>
-          </div> -->
 
           <div class="col">
             <div class="row items-end justify-end">
               <div class="row items-center text-grey-9 q-gutter-md">
-                <!-- <div class="row items-center">
-                  <q-img style="width: 20px" src="/svg/store.svg" />
-                  <div class="q-ml-sm hover-primary cursor-pointer">Tiendas</div>
-                </div> -->
-
-                <!-- <div class="row items-center">
-                  <q-img style="width: 20px" src="/svg/delivery.svg" />
-                  <div class="q-ml-sm hover-primary cursor-pointer">Sigue tu pedido</div>
-                </div> -->
-
-                <div class="row items-center">
-                  <q-img class="cursor-pointer" style="width: 25px" src="/svg/account.svg" />
-                  <!-- <div class="q-ml-sm hover-primary cursor-pointer">Mi cuenta</div> -->
-                </div>
-
-                <div class="row items-center">
-                  <q-img class="cursor-pointer" style="width: 25px" src="/svg/cart.svg" />
-                </div>
+                <q-img
+                  @click="router.push('/login')"
+                  class="cursor-pointer"
+                  style="width: 25px"
+                  src="/svg/account.svg"
+                />
+                <q-img class="cursor-pointer" style="width: 25px" src="/svg/cart.svg" />
               </div>
             </div>
           </div>
         </div>
-
-        <!-- <div style="padding: 12px 0" class="bg-primary">
-          <div class="row items-center justify-center q-col-gutter-x-md ">
-            <div>Marcas</div>
-            <div>Calendario adviento</div>
-            <div>Bloqueadores</div>
-            <div>Limpieza</div>
-            <div>Serums</div>
-          </div>
-        </div> -->
       </div>
     </q-header>
 
-    <!-- <q-footer bordered class="bg-black q-pa-md"> </q-footer> -->
+    <ProductCategoryMenu
+      :current-category="currentCategoryActive"
+      :is-active="activeMenu"
+      @onMouseLeaveFromMenu="onMouseLeaveFromMenu"
+    />
 
     <q-drawer behavior="mobile" v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
@@ -110,7 +67,7 @@
     </q-page-container>
 
     <q-card flat class="bg-black no-border-radius">
-      <q-card-section style="background: #f2ede5" class="q-pa-lg">
+      <q-card-section class="q-pa-lg bg-grey-3">
         <div class="row items-center">
           <div class="col" v-for="benefit in list.benefits" :key="benefit.title">
             <div class="row items-center justify-center">
@@ -147,12 +104,7 @@
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn round flat>
         <q-tooltip class="bg-positive" :offset="[10, 10]"> Contáctanos</q-tooltip>
-        <q-img
-          spinner-color="grey"
-          spinner-size="xs"
-          width="60px"
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/WhatsApp_icon.png/662px-WhatsApp_icon.png"
-        ></q-img>
+        <q-img spinner-color="grey" spinner-size="xs" width="60px" src="/png/whatsapp.png"></q-img>
       </q-btn>
     </q-page-sticky>
 
@@ -161,32 +113,43 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import { uid } from 'quasar';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 import CartDrawer from 'src/components/cart/CartDrawer.vue';
+import ProductCategoryMenu from 'src/components/products/ProductCategoryMenu.vue';
+
+const currentCategoryActive = ref<string | null>(null);
+const activeMenu = ref<boolean>(false);
+const router = useRouter();
 
 const list = ref({
   nav: [
-    { title: 'Resúmen', url: 'resumen', isMovil: false, isAuth: false },
+    { id: uid(), title: 'Resúmen', url: 'resumen', isMovil: false, isAuth: false },
     {
+      id: uid(),
       title: 'Celulares',
       url: '/reembolsos',
       isMovil: false,
       isAuth: false,
     },
     {
+      id: uid(),
       title: 'Tablets',
       url: '/comprobantes',
       isMovil: false,
       isAuth: false,
     },
     {
+      id: uid(),
       title: 'Relojes',
       url: '/gastos-de-movilidad',
       isMovil: false,
       isAuth: false,
     },
     {
+      id: uid(),
       title: 'Audio',
       url: '/reembolsos-y-pagos',
       isMovil: false,
@@ -219,13 +182,6 @@ const list = ref({
     },
   ],
 });
-// import InputElement from 'src/components/elements/Input.vue';
-
-// const loading = ref({
-//   search: false,
-// });
-
-// const search = ref('');
 
 const linksList: EssentialLinkProps[] = [
   {
@@ -274,7 +230,14 @@ const linksList: EssentialLinkProps[] = [
 
 const leftDrawerOpen = ref(false);
 
+const onMouseLeaveFromMenu = () => {
+  currentCategoryActive.value = null;
+  activeMenu.value = false;
+};
+
 // function toggleLeftDrawer() {
 //   leftDrawerOpen.value = !leftDrawerOpen.value;
 // }
 </script>
+
+<style scoped></style>
