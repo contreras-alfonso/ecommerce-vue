@@ -63,7 +63,7 @@
 
                         <SelectElement
                           :model-value="register.documentType"
-                          @update:model-value="(val) => (register.documentType = val)"
+                          @update:model-value="(val: string) => (register.documentType = val)"
                           label="Tipo de documento"
                           :options="options.documentType"
                           :rules-config="['isRequired']"

@@ -7,12 +7,12 @@
             loading="lazy"
             spinner-color="grey"
             spinner-size="sm"
-            :src="product.img"
+            :src="productCard.img"
             width="80px"
           />
         </div>
         <div class="col">
-          <div class="text-subtitle1 q-mb-md">{{ product.name }}</div>
+          <div class="text-subtitle1 q-mb-md">{{ productCard.name }}</div>
           <div class="row items-center q-col-gutter-x-sm">
             <div class="w-fit">
               <div class="row items-center quantity-control">
@@ -20,8 +20,8 @@
                 <InputElement
                   style="width: 60px"
                   dense
-                  :model-value="product.quantity"
-                  @update:model-value="(val: number) => (product.quantity = val)"
+                  :model-value="productCard.quantity"
+                  @update:model-value="(val: number) => (productCard.quantity = val)"
                   icon-color="grey"
                   :outlined="true"
                   :length-required="11"
@@ -53,7 +53,7 @@
 
     <div class="col-grow">
       <div class="row items-start q-col-gutter-x-sm">
-        <div class="text-subtitle1 text-secondary">S/ {{ product.price }}</div>
+        <div class="text-subtitle1 text-secondary">S/ {{ productCard.price }}</div>
         <div><q-btn round size="sm" icon="close" color="grey-6" flat></q-btn></div>
       </div>
     </div>
@@ -63,11 +63,20 @@
 </template>
 <script setup lang="ts">
 import InputElement from 'src/components/elements/Input.vue';
-import type { Product } from 'src/types/product';
-import { ref } from 'vue';
+import type { ProductCard } from 'src/types/product-card';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
-  product: Product;
+  product: ProductCard;
 }>();
+
+const productCard = ref<ProductCard>(props.product);
+
+watch(
+  () => props.product,
+  (newValue) => {
+    productCard.value = newValue;
+  },
+);
 </script>
 <style lang=""></style>

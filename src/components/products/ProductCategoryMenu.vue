@@ -10,7 +10,9 @@
         <div class="row items-center justify-center">
           <div class="col-8">
             <div class="cursor-pointer hover-primary non-selectable w-fit">
-              <h6 class="q-mt-none q-mb-sm">Ver todo <q-icon name="chevron_right"></q-icon></h6>
+              <h6 @click="onViewAllProducts()" class="q-mt-none q-mb-sm">
+                Ver todo <q-icon name="chevron_right"></q-icon>
+              </h6>
             </div>
 
             <div class="col-8">
@@ -109,6 +111,11 @@ const onMouseLeaveFromMenu = (): void => {
 
 const onViewProduct = async (): Promise<void> => {
   await router.push('/product/123');
+  onMouseLeaveFromMenu();
+};
+
+const onViewAllProducts = async (): Promise<void> => {
+  await router.push('/store/celulares');
   onMouseLeaveFromMenu();
 };
 

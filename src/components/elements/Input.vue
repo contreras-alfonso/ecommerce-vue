@@ -155,7 +155,8 @@ watch(
   border: none;
 }
 
-.q-field--outlined:has(.border-black) .q-field__control::before {
+.q-field--outlined:has(.border-black) .q-field__control::before,
+.q-field--outlined .q-field__control::before {
   border: 1px solid black;
 }
 

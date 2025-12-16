@@ -14,6 +14,7 @@
         >
           <swiper-slide v-for="image in images" :key="image"
             ><q-img
+              fit="contain"
               class="img-preview-product non-selectable"
               spinner-size="xs"
               spinner-color="grey"
@@ -35,7 +36,7 @@
         >
           <swiper-slide v-for="image in images" :key="image"
             ><q-img
-              fit="cover"
+              fit="contain"
               class="block full-height full-width non-selectable"
               spinner-color="grey"
               :src="image"
@@ -67,7 +68,6 @@ const images = ref<string[]>([
   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/7/-/7-anthelios-uvmune-dp-facial_1.jpg',
   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/8/-/8-anthelios-uvmune-dp-facial.jpg',
   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/9/-/9-anthelios-uvmune-dp-facial-800x800.jpg',
-  'https://underwaterco.com/cdn/shop/files/Polo_Shirt_w_embroidery_SMOKE_GREEN_540x.jpg?v=1744318173',
   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/1/0/10-anthelios-uvmune-dp-posterior-facial-800x800.jpg',
 ]);
 
@@ -75,10 +75,24 @@ const setThumbsSwiper = (swiper: SwiperType) => {
   thumbsSwiper.value = swiper;
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .swiper {
   width: 100%;
-  height: 700px;
+  height: 400px;
+}
+
+@media (min-width: 1024px) {
+  .swiper {
+    width: 100%;
+    height: 500px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .swiper {
+    width: 100%;
+    height: 700px;
+  }
 }
 
 .img-preview-product {

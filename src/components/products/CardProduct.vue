@@ -10,7 +10,7 @@
         <q-badge class="q-px-md q-py-xs" rounded color="primary" :label="product?.brand" />
 
         <div class="text-subtitle1 q-my-sm text-grey-10" style="line-height: 20px">
-          {{ product?.title }}
+          {{ product?.name }}
         </div>
         <div class="text-h6 fw-500 fs-18 text-secondary">S/ {{ product?.price }}</div>
       </q-card-section>
@@ -26,12 +26,21 @@
   </div>
 </template>
 <script setup lang="ts">
-defineProps({
-  product: { type: Object, required: false },
-});
+import type { Product } from 'src/types/product';
+
+defineProps<{ product: Product }>();
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .product-card {
   border: 1px solid #f3f3f0;
+}
+
+.btn-product {
+  background-color: #f8f6e3;
+  padding: 8px 0 !important;
+}
+
+.btn-product:hover {
+  background-color: #f5eda7;
 }
 </style>

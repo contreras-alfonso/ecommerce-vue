@@ -40,7 +40,12 @@
                   style="width: 25px"
                   src="/svg/account.svg"
                 />
-                <q-img class="cursor-pointer" style="width: 25px" src="/svg/cart.svg" />
+                <q-img
+                  @click="mainStore.cartDrawer = true"
+                  class="cursor-pointer"
+                  style="width: 25px"
+                  src="/svg/cart.svg"
+                />
               </div>
             </div>
           </div>
@@ -117,12 +122,14 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { uid } from 'quasar';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { useMainStore } from 'src/stores/main-store';
 import CartDrawer from 'src/components/cart/CartDrawer.vue';
 import ProductCategoryMenu from 'src/components/products/ProductCategoryMenu.vue';
 
 const currentCategoryActive = ref<string | null>(null);
 const activeMenu = ref<boolean>(false);
 const router = useRouter();
+const mainStore = useMainStore();
 
 const list = ref({
   nav: [

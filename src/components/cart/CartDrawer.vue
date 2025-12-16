@@ -1,6 +1,7 @@
 <template>
   <q-drawer
-    v-model="show"
+    @hide="onClose"
+    v-model="mainStore.cartDrawer"
     side="right"
     behavior="mobile"
     elevated
@@ -15,7 +16,7 @@
               Mi carrito <span class="text-weight-regular">({{ products.length }})</span>
               <q-spinner class="q-ml-sm" color="primary" />
             </div>
-            <q-btn icon="close" color="grey-6" size="md" round flat no-caps />
+            <q-btn @click="onClose" icon="close" color="grey-6" size="md" round flat no-caps />
           </div>
         </q-card-section>
 
@@ -61,12 +62,13 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-import CartProductCard from './CartProductCard.vue';
-import type { Product } from 'src/types/product';
 import { uid } from 'quasar';
+import { useMainStore } from 'src/stores/main-store';
+import CartProductCard from './CartProductCard.vue';
+import type { ProductCard } from 'src/types/product-card';
 
-const show = ref(false);
-const products = ref<Product[]>([
+const mainStore = useMainStore();
+const products = ref<ProductCard[]>([
   {
     id: uid(),
     img: 'https://dermotiendashopping.com/media/catalog/product/cache/005b1827ffff347d76a14824892d2303/c/e/cerave_pack_473ml_2.png',
@@ -96,6 +98,10 @@ const products = ref<Product[]>([
     quantity: 1,
   },
 ]);
+
+const onClose = (): void => {
+  mainStore.cartDrawer = false;
+};
 </script>
 <style lang="scss">
 .quantity-control {

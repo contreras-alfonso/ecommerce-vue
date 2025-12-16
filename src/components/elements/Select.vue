@@ -3,7 +3,7 @@
     :outlined="outlined"
     option-label="name"
     option-value="id"
-    use-input
+    :use-input="useInput"
     v-model="inputVal"
     :class="{ 'hide-arrow': localReadOnly }"
     class="text-weight-medium"
@@ -32,7 +32,6 @@
     @filter="filterFn"
     @update:model-value="onChange"
     no-error-icon
-    label-slot
     :loading="localIsLoading"
     dropdown-icon="expand_more"
   >
@@ -98,9 +97,11 @@ const props = withDefaults(
     isSquare?: boolean;
     borderBlack?: boolean;
     noBorder?: boolean;
+    useInput?: boolean;
   }>(),
   {
     isClearable: true,
+    useInput: true,
   },
 );
 const emit = defineEmits(['update:modelValue', 'changeName:name']);
