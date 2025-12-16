@@ -82,6 +82,7 @@ const products = ref<Product[]>([
     id: uid(),
     brand: 'Bioderma',
     name: 'Bioderma Sensibio Pack Piel Sensible',
+
     price: 199.9,
     img: 'https://dermotiendashopping.com/media/catalog/product/cache/005b1827ffff347d76a14824892d2303/p/a/pack_hydroboost_refill_x2.png',
   },
@@ -137,5 +138,7 @@ const products = ref<Product[]>([
 
 .product-slider .swiper-slide {
   width: 280px;
+  height: auto;
+  padding: 2px 0;
 }
 </style>

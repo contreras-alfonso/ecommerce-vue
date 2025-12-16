@@ -41,7 +41,11 @@
 
             <div class="q-mt-lg">
               <div class="row q-col-gutter-lg">
-                <div class="col-lg-3 col-md-4 col-sm-6 col-12" v-for="product in products" :key="product.id">
+                <div
+                  class="col-lg-3 col-md-4 col-sm-6 col-12"
+                  v-for="product in products"
+                  :key="product.id"
+                >
                   <card-product :product="product" />
                 </div>
               </div>
@@ -299,4 +303,5 @@ const onSetFiltersFromQuery = (): void => {
   }
 };
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>
