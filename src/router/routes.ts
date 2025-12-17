@@ -14,6 +14,18 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
+  {
+    path: '/administration',
+    component: () => import('layouts/AdministrationLayout.vue'),
+    children: [
+      { path: 'products', component: () => import('pages/administration/products/Index.vue') },
+      { path: 'products/:id', component: () => import('pages/administration/products/Create.vue') },
+      { path: 'categories', component: () => import('pages/administration/categories/Index.vue') },
+      { path: 'brands', component: () => import('pages/administration/brands/Index.vue') },
+      { path: 'colors', component: () => import('pages/administration/colors/Index.vue') },
+    ],
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {

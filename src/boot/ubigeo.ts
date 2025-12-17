@@ -1,7 +1,6 @@
 import { boot } from 'quasar/wrappers';
 
 const departments: Record<string, string> = {
-  '00': 'Todos',
   '01': 'Amazonas',
   '02': 'Áncash',
   '03': 'Apurímac',

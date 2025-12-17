@@ -46,21 +46,21 @@
                   <div class="row q-col-gutter-sm q-py-md">
                     <div class="col-6">
                       <div class="column text-subtitle1">
-                        <div class="text-grey-8">Nombres</div>
+                        <div class="text-grey-7">Nombres</div>
                         <div>Alfonso</div>
                       </div>
                     </div>
 
                     <div class="col-6">
                       <div class="column text-subtitle1">
-                        <div class="text-grey-8">Apellidos</div>
+                        <div class="text-grey-7">Apellidos</div>
                         <div>Contreras Gómez</div>
                       </div>
                     </div>
 
                     <div class="col-6">
                       <div class="column text-subtitle1">
-                        <div class="text-grey-8">Número de documento</div>
+                        <div class="text-grey-7">Número de documento</div>
                         <div>78414785</div>
                       </div>
                     </div>
@@ -74,14 +74,14 @@
                   <div class="row q-col-gutter-sm q-py-md">
                     <div class="col-6">
                       <div class="column text-subtitle1">
-                        <div class="text-grey-8">Correo</div>
+                        <div class="text-grey-7">Correo</div>
                         <div>contrerasalfonso.lino@gmail.com</div>
                       </div>
                     </div>
 
                     <div class="col-6">
                       <div class="column text-subtitle1">
-                        <div class="text-grey-8">Apellidos</div>
+                        <div class="text-grey-7">Celular</div>
                         <div>+5199962100</div>
                       </div>
                     </div>
@@ -89,6 +89,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="orders">
+                  <div class="text-h6 q-mb-md">Pedidos</div>
                   <div class="column items-center justify-center">
                     <div class="">
                       <q-icon name="receipt" color="grey-5" size="xl" />
@@ -340,7 +341,7 @@ import type { Marker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import _ from 'lodash';
 import { useRouter, useRoute } from 'vue-router';
-import { computed, nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
 import SelectElement from 'src/components/elements/Select.vue';
 import type { SelectOption } from 'src/types/select.option';
@@ -485,5 +486,12 @@ const options = ref<{ documentType: SelectOption[] }>({
 const onUpdateProfile = (): void => {};
 
 const onAddAddress = (): void => {};
+
+watch(
+  () => route.params.section,
+  async () => {
+    await onSetTab();
+  },
+);
 </script>
 <style lang="scss" scoped></style>
