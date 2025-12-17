@@ -43,21 +43,6 @@
     :filter="localFilter"
     flat
   >
-    <!-- <template v-slot:top v-if="$q.screen.xs || $q.screen.sm">
-      <q-input
-        input-class="grey-6"
-        label-color="grey-6"
-        class="full-width"
-        color="secondary"
-        v-model="localFilter"
-        :placeholder="`Buscar`"
-        dense
-      >
-        <template v-slot:append>
-          <q-icon color="secondary" name="search" />
-        </template>
-      </q-input>
-    </template> -->
     <template v-slot:header="props" v-if="!($q.screen.xs || $q.screen.sm)">
       <q-tr class="bg-secondary text-white" :props="props">
         <template v-for="col in props.cols" :key="col.name">
@@ -101,18 +86,6 @@
                 Editar
               </q-tooltip>
             </q-btn>
-            <!-- <q-btn
-              v-if="enabledDelete"
-              @click="onHandleDelete(props.row)"
-              icon="close"
-              color="red"
-              size="sm"
-              round
-            >
-              <q-tooltip v-if="!($q.screen.xs || $q.screen.sm)" class="bg-red shadow-1 text-center">
-                Eliminar
-              </q-tooltip>
-            </q-btn> -->
           </div>
         </q-td>
       </q-tr>
@@ -146,19 +119,6 @@
                   @click="onHandleUpdate(props.row)"
                 >
                 </q-chip>
-                <!-- <q-chip
-                  v-if="enabledDelete"
-                  class="q-py-md"
-                  round
-                  clickable
-                  label="Eliminar"
-                  icon="close"
-                  color="red"
-                  text-color="white"
-                  size="sm"
-                  @click="onHandleDelete(props.row)"
-                >
-                </q-chip> -->
               </div>
             </div>
           </div>
@@ -167,20 +127,21 @@
     </template>
   </q-table>
 </template>
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import { useQuasar } from 'quasar';
 import { ref } from 'vue';
 import Title from './Title.vue';
 import InputElement from 'src/components/elements/Input.vue';
+import type { ColumnTable } from 'src/types/column-table';
 
 const emit = defineEmits(['onHandleUpdate', 'onHandleAdd']);
 
 const props = defineProps<{
   titleSingular: string;
   title: string;
-  visible: any;
-  rows: any;
-  columns: any;
+  visible: string[];
+  rows: T[];
+  columns: ColumnTable[];
 }>();
 
 const $q = useQuasar();

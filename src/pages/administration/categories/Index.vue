@@ -2,10 +2,6 @@
   <q-page padding>
     <div class="row items-center justify-center">
       <div class="col-md-11 col-12 q-gutter-y-md">
-        <!-- <div class="row items-center justify-between">
-          <Title :title="title" />
-     
-        </div> -->
         <Table
           :title-singular="titleSingular"
           :title="title"
@@ -24,13 +20,15 @@ import { uid } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import Table from 'src/components/administration/Table.vue';
 import type { Category } from 'src/types/category';
+import type { ColumnTable } from 'src/types/column-table';
 
 const { t } = useI18n();
 const title = t('page.administration.categories.title', 2);
 const titleSingular = t('page.administration.categories.title', 1);
 
-const visible = ['name', 'slug', 'created_at', 'updated_at'];
-const columns = [
+const visible: string[] = ['name', 'slug', 'created_at', 'updated_at'];
+
+const columns: ColumnTable[] = [
   {
     name: 'name',
     label: 'Nombre',
