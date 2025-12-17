@@ -17,7 +17,7 @@
           <SelectElement
             :model-value="selectedColor"
             @update:model-value="(val: string) => (selectedColor = val)"
-            label="Tipo de documento"
+            label="Color"
             :options="localColors"
             :rules-config="['isRequired']"
             :outlined="true"

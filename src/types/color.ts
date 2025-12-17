@@ -1,6 +1,7 @@
-export interface Color {
+import type { BaseOption } from './base-option';
+
+export interface Color extends BaseOption {
   id: string | null;
-  name: string;
   hex: string;
   created_at?: string;
   updated_at?: string | null;

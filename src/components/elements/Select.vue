@@ -73,8 +73,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import type { Color } from 'src/types/color';
-import type { SelectOption } from 'src/types/select-option';
+import type { BaseOption } from 'src/types/base-option';
 
 const props = withDefaults(
   defineProps<{
@@ -84,11 +83,11 @@ const props = withDefaults(
     isClearable?: boolean;
     isMultiple?: boolean;
     removeChip?: boolean;
-    options: SelectOption[] | Color[];
+    options: BaseOption[];
     dense?: boolean;
     isReadOnly?: boolean;
     isRounded?: boolean;
-    modelValue?: string | number | null | SelectOption;
+    modelValue?: string | number | null;
     rulesConfig?: string[];
     isLoading?: boolean;
     isSquare?: boolean;
@@ -104,7 +103,7 @@ const props = withDefaults(
 const emit = defineEmits(['update:modelValue', 'changeName:name']);
 
 const localReadOnly = ref(props.isReadOnly);
-const list = ref<{ items: SelectOption[] | Color[] }>({
+const list = ref<{ items: BaseOption[] }>({
   items: props.options,
 });
 
@@ -133,7 +132,7 @@ const filterFn = (val: string, update: (callback: () => void) => void) => {
   }
   update(() => {
     const needle = val.toLowerCase();
-    list.value.items = props.options.filter((v: SelectOption | Color) => {
+    list.value.items = props.options.filter((v: BaseOption) => {
       const name = v.name.toLowerCase();
       return name.includes(needle);
     });

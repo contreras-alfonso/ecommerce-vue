@@ -1,4 +1,5 @@
-export interface SelectOption {
-  id: string | null;
-  name: string;
+import type { BaseOption } from './base-option';
+
+export interface SelectOption extends BaseOption {
+  id: string;
 }
