@@ -69,6 +69,8 @@
                           :rules-config="['isRequired']"
                           :outlined="true"
                           border-black
+                          :is-clearable="false"
+                          :use-input="false"
                           is-square
                         />
 

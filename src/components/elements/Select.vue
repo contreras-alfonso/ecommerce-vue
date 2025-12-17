@@ -91,7 +91,7 @@ const props = withDefaults(
     dense?: boolean;
     isReadOnly?: boolean;
     isRounded?: boolean;
-    modelValue?: string | number | SelectOption;
+    modelValue?: string | number | null | SelectOption;
     rulesConfig?: string[];
     isLoading?: boolean;
     isSquare?: boolean;

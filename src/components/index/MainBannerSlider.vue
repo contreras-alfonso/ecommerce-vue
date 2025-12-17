@@ -14,7 +14,7 @@
     >
       <swiper-slide v-for="slide in slides" :key="slide.id">
         <q-card flat class="relative-position full-height">
-          <q-img loading="lazy" class="absolute-full" :src="slide.path" />
+          <q-img loading="lazy" spinner-color="grey" class="absolute-full" :src="slide.path" />
         </q-card>
       </swiper-slide>
     </swiper>
