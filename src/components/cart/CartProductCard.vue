@@ -7,12 +7,12 @@
             loading="lazy"
             spinner-color="grey"
             spinner-size="sm"
-            :src="productCard.img"
+            :src="productCart.img"
             width="80px"
           />
         </div>
         <div class="col">
-          <div class="text-subtitle1 q-mb-md">{{ productCard.name }}</div>
+          <div class="text-subtitle1 q-mb-md">{{ productCart.name }}</div>
           <div class="row items-center q-col-gutter-x-sm">
             <div class="w-fit">
               <div class="row items-center quantity-control">
@@ -20,8 +20,8 @@
                 <InputElement
                   style="width: 60px"
                   dense
-                  :model-value="productCard.quantity"
-                  @update:model-value="(val: number) => (productCard.quantity = val)"
+                  :model-value="productCart.quantity"
+                  @update:model-value="(val: number) => (productCart.quantity = val)"
                   icon-color="grey"
                   :outlined="true"
                   :length-required="11"
@@ -53,7 +53,7 @@
 
     <div class="col-grow">
       <div class="row items-start q-col-gutter-x-sm">
-        <div class="text-subtitle1 text-secondary">S/ {{ productCard.price }}</div>
+        <div class="text-subtitle1 text-secondary">S/ {{ productCart.price }}</div>
         <div><q-btn round size="sm" icon="close" color="grey-6" flat></q-btn></div>
       </div>
     </div>
@@ -63,19 +63,19 @@
 </template>
 <script setup lang="ts">
 import InputElement from 'src/components/elements/Input.vue';
-import type { ProductCard } from 'src/types/product-card';
+import type { ProductCart } from 'src/types/product-cart';
 import { ref, watch } from 'vue';
 
 const props = defineProps<{
-  product: ProductCard;
+  product: ProductCart;
 }>();
 
-const productCard = ref<ProductCard>(props.product);
+const productCart = ref<ProductCart>(props.product);
 
 watch(
   () => props.product,
   (newValue) => {
-    productCard.value = newValue;
+    productCart.value = newValue;
   },
 );
 </script>

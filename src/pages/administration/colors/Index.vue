@@ -65,11 +65,16 @@
                 </q-td>
 
                 <q-td v-if="col.name == 'hex'" :key="col.name" :props="props">
-                  <q-avatar
-                    size="md"
-                    :style="{ backgroundColor: col.value }"
-                    style="border: 1px solid #696969"
-                  />
+                  <div class="row items-center justify-center q-col-gutter-x-md">
+                    <div class="col">{{ col.value }}</div>
+                    <div>
+                      <q-avatar
+                        size="md"
+                        :style="{ backgroundColor: col.value }"
+                        style="border: 1px solid #696969"
+                      />
+                    </div>
+                  </div>
                 </q-td>
               </template>
 

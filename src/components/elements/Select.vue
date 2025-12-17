@@ -35,6 +35,21 @@
     :loading="localIsLoading"
     dropdown-icon="expand_more"
   >
+    <template v-slot:option="scope">
+      <q-item v-bind="scope.itemProps">
+        <q-item-section v-if="scope.opt?.hex" avatar>
+          <q-avatar
+            size="md"
+            :style="{ backgroundColor: scope.opt.hex }"
+            style="border: 1px solid #696969"
+          ></q-avatar>
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ scope.opt.name }}</q-item-label>
+          <q-item-label v-if="scope.opt?.hex" caption>{{ scope.opt.hex }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </template>
     <template v-slot:loading>
       <q-spinner color="grey" />
     </template>
@@ -57,9 +72,9 @@
 </template>
 
 <script setup lang="ts">
-import type { SelectOption } from 'src/types/select-option';
 import { ref, computed, watch } from 'vue';
-
+import type { Color } from 'src/types/color';
+import type { SelectOption } from 'src/types/select-option';
 
 const props = withDefaults(
   defineProps<{
@@ -69,7 +84,7 @@ const props = withDefaults(
     isClearable?: boolean;
     isMultiple?: boolean;
     removeChip?: boolean;
-    options: SelectOption[];
+    options: SelectOption[] | Color[];
     dense?: boolean;
     isReadOnly?: boolean;
     isRounded?: boolean;
@@ -89,7 +104,7 @@ const props = withDefaults(
 const emit = defineEmits(['update:modelValue', 'changeName:name']);
 
 const localReadOnly = ref(props.isReadOnly);
-const list = ref<{ items: SelectOption[] }>({
+const list = ref<{ items: SelectOption[] | Color[] }>({
   items: props.options,
 });
 
@@ -118,7 +133,7 @@ const filterFn = (val: string, update: (callback: () => void) => void) => {
   }
   update(() => {
     const needle = val.toLowerCase();
-    list.value.items = props.options.filter((v: SelectOption) => {
+    list.value.items = props.options.filter((v: SelectOption | Color) => {
       const name = v.name.toLowerCase();
       return name.includes(needle);
     });

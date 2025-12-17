@@ -13,6 +13,7 @@ export default {
     administration: {
       products: {
         title: 'Producto | Productos',
+        new: 'Agregar nuevo producto'
       },
       categories: {
         title: 'Categoría | Categorías',

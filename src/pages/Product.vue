@@ -8,7 +8,7 @@
 
         <div class="row q-col-gutter-x-xl">
           <div class="col-6">
-            <product-detail-slider />
+            <product-images-slider />
           </div>
 
           <div class="col-6">
@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import ProductCharacteristics from 'src/components/products/ProductCharacteristics.vue';
 import ProductDetail from 'src/components/products/ProductDetail.vue';
-import ProductDetailSlider from 'src/components/products/ProductDetailSlider.vue';
+import ProductImagesSlider from 'src/components/products/ProductImagesSlider.vue';
 import BreadCrum from 'src/components/shared/BreadCrum.vue';
 </script>
 <style lang="scss"></style>

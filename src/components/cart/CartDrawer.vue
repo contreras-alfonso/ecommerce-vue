@@ -16,7 +16,7 @@
               Mi carrito <span class="text-weight-regular">({{ products.length }})</span>
               <q-spinner class="q-ml-sm" color="primary" />
             </div>
-            <q-btn @click="onClose" icon="close" color="grey-6" size="md" round flat/>
+            <q-btn @click="onClose" icon="close" color="grey-6" size="md" round flat />
           </div>
         </q-card-section>
 
@@ -65,10 +65,10 @@ import { ref } from 'vue';
 import { uid } from 'quasar';
 import { useMainStore } from 'src/stores/main-store';
 import CartProductCard from './CartProductCard.vue';
-import type { ProductCard } from 'src/types/product-card';
+import type { ProductCart } from 'src/types/product-cart';
 
 const mainStore = useMainStore();
-const products = ref<ProductCard[]>([
+const products = ref<ProductCart[]>([
   {
     id: uid(),
     img: 'https://dermotiendashopping.com/media/catalog/product/cache/005b1827ffff347d76a14824892d2303/c/e/cerave_pack_473ml_2.png',
