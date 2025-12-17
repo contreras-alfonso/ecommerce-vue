@@ -57,19 +57,7 @@
     <template v-slot:body="props">
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <template v-if="!Object.prototype.hasOwnProperty.call(col, 'tooltip')">
-            {{ col.value }}
-          </template>
-          <template v-else>
-            {{ col.value }}
-            <q-tooltip
-              v-if="!($q.screen.xs || $q.screen.sm)"
-              class="bg-white"
-              style="color: #000000"
-            >
-              {{ col.tooltip() }}
-            </q-tooltip>
-          </template>
+          {{ col.value }}
         </q-td>
 
         <q-td auto-width>
@@ -158,7 +146,7 @@ const localVisible = ref([...props.visible]);
 const localRows = ref([...props.rows]);
 const localColumns = ref([...props.columns]);
 
-const onHandleUpdate = (entity: string) => {
+const onHandleUpdate = (entity: T) => {
   emit('onHandleUpdate', entity);
 };
 

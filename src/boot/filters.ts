@@ -1,6 +1,6 @@
 import { boot } from 'quasar/wrappers';
 import { districts as districtsUb, provinces as provincesUb } from 'boot/ubigeo';
-import type { SelectOption } from 'src/types/select.option';
+import type { SelectOption } from 'src/types/select-option';
 
 function ubigeoFilterDistrict(value: string | null) {
   const result: SelectOption[] = [];

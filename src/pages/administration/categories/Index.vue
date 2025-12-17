@@ -13,18 +13,37 @@
         />
       </div>
     </div>
+
+    <Management
+      v-if="dialogs.management.isOpen"
+      :title="titleSingular"
+      :type-management="dialogs.management.type"
+      :category="dialogs.management.entity"
+      @on-close="onClose"
+    />
   </q-page>
 </template>
 <script setup lang="ts">
+import { ref } from 'vue';
 import { uid } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import Table from 'src/components/administration/Table.vue';
 import type { Category } from 'src/types/category';
 import type { ColumnTable } from 'src/types/column-table';
+import Management from 'src/components/administration/categories/Management.vue';
+import type { ManagementDialog } from 'src/types/management-dialog';
 
 const { t } = useI18n();
 const title = t('page.administration.categories.title', 2);
 const titleSingular = t('page.administration.categories.title', 1);
+
+const dialogs = ref<{ management: ManagementDialog<Category> }>({
+  management: {
+    isOpen: false,
+    type: 'CREATE',
+    entity: null,
+  },
+});
 
 const visible: string[] = ['name', 'slug', 'created_at', 'updated_at'];
 
@@ -171,9 +190,19 @@ const rows: Category[] = [
 ];
 
 const onHandleUpdate = (category: Category): void => {
-  console.log(category.id);
+  dialogs.value.management.isOpen = true;
+  dialogs.value.management.type = 'EDIT';
+  dialogs.value.management.entity = category;
 };
 
-const onHandleAdd = () => {};
+const onHandleAdd = () => {
+  dialogs.value.management.isOpen = true;
+  dialogs.value.management.type = 'CREATE';
+  dialogs.value.management.entity = null;
+};
+
+const onClose = () => {
+  dialogs.value.management.isOpen = false;
+};
 </script>
 <style lang=""></style>

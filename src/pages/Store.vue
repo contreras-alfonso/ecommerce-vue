@@ -68,7 +68,7 @@ import BreadCrum from 'src/components/shared/BreadCrum.vue';
 import SelectElement from 'src/components/elements/Select.vue';
 import CardProduct from 'src/components/products/CardProduct.vue';
 import ProductFilter from 'src/components/products/ProductFilter.vue';
-import type { SelectOption } from 'src/types/select.option';
+import type { SelectOption } from 'src/types/select-option';
 import type { Product } from 'src/types/product';
 import type { PriceRange } from 'src/types/price-range';
 import { useNotify } from 'src/composables/notify';
@@ -303,5 +303,4 @@ const onSetFiltersFromQuery = (): void => {
   }
 };
 </script>
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

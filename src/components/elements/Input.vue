@@ -51,6 +51,16 @@
 
     <template v-slot:append>
       <q-icon
+        v-if="isColor"
+        name="colorize"
+        :color="iconColor ? iconColor : 'primary'"
+        class="cursor-pointer"
+      >
+        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+          <q-color v-model="colorValue" />
+        </q-popup-proxy>
+      </q-icon>
+      <q-icon
         v-if="isPwd"
         :name="localIsPwd ? 'visibility_off' : 'visibility'"
         class="cursor-pointer"
@@ -69,43 +79,60 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
-const props = defineProps({
-  label: String,
-  isReadOnly: Boolean,
-  rulesConfig: Array,
-  isPwd: { type: Boolean, default: false, required: false },
-  outlined: { type: Boolean, default: true },
-  isColor: { type: Boolean, default: false },
-  bgColor: { type: String, required: false },
-  maxLength: { type: String, required: false },
-  icon: { type: String, required: false },
-  isRequired: Boolean,
-  isNumber: Boolean,
-  isText: Boolean,
-  isMail: Boolean,
-  isTextArea: Boolean,
-  modelValue: [String, Number],
-  time: { type: String, default: '0' },
-  lengthRequired: { type: Number, default: 0 },
-  minLengthRequired: { type: Number, required: false },
-  mask: { type: String, default: '', required: false },
-  prefix: { type: String, default: '', required: false },
-  color: { type: String, default: 'grey-9', required: false },
-  isPositive: { type: Boolean, default: false, required: false },
-  isInteger: { type: Boolean, default: false, required: false },
-  maxValue: { type: Number, required: false },
-  minValue: { type: [Number, String], required: false },
-  iconColor: { type: String, required: false },
-  labelColor: { type: String, required: false },
-  isLoading: { type: Boolean, default: false, required: false },
-  isRounded: { type: Boolean, default: false, required: false },
-  noBorder: { type: Boolean, default: false, required: false },
-  inputXl: { type: Boolean, default: false, required: false },
-  textCenter: { type: Boolean, default: false, required: false },
-  isSquare: { type: Boolean, default: false, required: false },
-  borderBlack: { type: Boolean, default: false, required: false },
-  inputHeight: { type: String, required: false },
-});
+const props = withDefaults(
+  defineProps<{
+    label?: string;
+    isReadOnly?: boolean;
+    rulesConfig?: unknown[];
+
+    isPwd?: boolean;
+    outlined?: boolean;
+    isColor?: boolean;
+
+    bgColor?: string;
+    maxLength?: string;
+    icon?: string;
+
+    isRequired?: boolean;
+    isNumber?: boolean;
+    isText?: boolean;
+    isMail?: boolean;
+    isTextArea?: boolean;
+
+    modelValue?: string | number | null;
+
+    time?: string;
+    lengthRequired?: number;
+    minLengthRequired?: number;
+
+    mask?: string;
+    prefix?: string;
+    color?: string;
+
+    isPositive?: boolean;
+    isInteger?: boolean;
+
+    maxValue?: number;
+    minValue?: number | string;
+
+    iconColor?: string;
+    labelColor?: string;
+
+    isLoading?: boolean;
+    isRounded?: boolean;
+    noBorder?: boolean;
+
+    inputXl?: boolean;
+    textCenter?: boolean;
+    isSquare?: boolean;
+    borderBlack?: boolean;
+
+    inputHeight?: string;
+  }>(),
+  {
+    outlined: true,
+  },
+);
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -116,6 +143,13 @@ const localIsLoading = ref(props.isLoading);
 const inputVal = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
+});
+
+const colorValue = computed<string | null>({
+  get: () => (typeof inputVal.value === 'string' ? inputVal.value : null),
+  set: (val) => {
+    inputVal.value = val;
+  },
 });
 
 const computedRules = computed(() => {

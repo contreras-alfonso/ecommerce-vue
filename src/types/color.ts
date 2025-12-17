@@ -1,7 +1,7 @@
-export interface Category {
+export interface Color {
   id: string | null;
   name: string;
-  slug: string;
+  hex: string;
   created_at?: string;
   updated_at?: string | null;
 }

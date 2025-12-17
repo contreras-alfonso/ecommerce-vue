@@ -57,27 +57,9 @@
 </template>
 
 <script setup lang="ts">
-import type { SelectOption } from 'src/types/select.option';
+import type { SelectOption } from 'src/types/select-option';
 import { ref, computed, watch } from 'vue';
 
-// const props = defineProps({
-//   label: String,
-//   isRequired: { type: Boolean, default: false },
-//   outlined: { type: Boolean, default: true },
-//   isClearable: { type: Boolean, default: true },
-//   isMultiple: { type: Boolean, default: false },
-//   removeChip: { type: Boolean, default: false },
-//   options: { type: Array, default: () => [] },
-//   dense: { type: Boolean, default: false },
-//   isReadOnly: { type: Boolean, default: false },
-//   isRounded: { type: Boolean, default: false },
-//   modelValue: [String, Object, Number],
-//   rulesConfig: Array,
-//   isLoading: { type: Boolean, default: false, required: false },
-//   isSquare: { type: Boolean, default: false, required: false },
-//   borderBlack: { type: Boolean, default: false, required: false },
-//   noBorder: { type: Boolean, default: false, required: false },
-// });
 
 const props = withDefaults(
   defineProps<{

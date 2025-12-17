@@ -43,7 +43,7 @@
 </template>
 <script setup lang="ts">
 import { PriceRange } from 'src/types/price-range';
-import type { SelectOption } from 'src/types/select.option';
+import type { SelectOption } from 'src/types/select-option';
 import { ref } from 'vue';
 
 const emit = defineEmits(['onChangeRangePrice', 'onChangeBrands']);

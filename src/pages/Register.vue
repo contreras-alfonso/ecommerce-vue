@@ -39,8 +39,6 @@
                           @update:model-value="(val: string) => (register.name = val)"
                           icon-color="grey"
                           :outlined="true"
-                          :length-required="11"
-                          time="1500"
                           bg-color="white"
                           border-black
                           is-square
@@ -53,8 +51,6 @@
                           @update:model-value="(val: string) => (register.lastname = val)"
                           icon-color="grey"
                           :outlined="true"
-                          :length-required="11"
-                          time="1500"
                           bg-color="white"
                           border-black
                           is-square
@@ -80,8 +76,6 @@
                           @update:model-value="(val: string) => (register.documentNumber = val)"
                           icon-color="grey"
                           :outlined="true"
-                          :length-required="11"
-                          time="1500"
                           bg-color="white"
                           border-black
                           is-square
@@ -115,8 +109,6 @@
                           @update:model-value="(val: string) => (register.email = val)"
                           icon-color="grey"
                           :outlined="true"
-                          :length-required="11"
-                          time="1500"
                           bg-color="white"
                           border-black
                           is-square
@@ -129,8 +121,6 @@
                           :model-value="register.password"
                           @update:model-value="(val: string) => (register.password = val)"
                           :outlined="true"
-                          :length-required="11"
-                          time="1500"
                           bg-color="white"
                           border-black
                           is-square
@@ -142,8 +132,6 @@
                           :model-value="register.repeatPassword"
                           @update:model-value="(val: string) => (register.repeatPassword = val)"
                           :outlined="true"
-                          :length-required="11"
-                          time="1500"
                           bg-color="white"
                           border-black
                           is-square
@@ -214,7 +202,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import InputElement from 'src/components/elements/Input.vue';
 import SelectElement from 'src/components/elements/Select.vue';
-import type { SelectOption } from 'src/types/select.option';
+import type { SelectOption } from 'src/types/select-option';
 
 const router = useRouter();
 

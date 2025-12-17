@@ -344,7 +344,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
 import SelectElement from 'src/components/elements/Select.vue';
-import type { SelectOption } from 'src/types/select.option';
+import type { SelectOption } from 'src/types/select-option';
 import type { Address } from 'src/types/address';
 import { departments } from 'boot/ubigeo';
 import { ubigeoFilterDistrict, ubigeoFilterProvince } from 'boot/filters';

@@ -108,7 +108,7 @@
 
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn round flat>
-        <q-tooltip class="bg-positive" :offset="[10, 10]"> Contáctanos</q-tooltip>
+        <!-- <q-tooltip class="bg-positive" :offset="[10, 10]"> Contáctanos</q-tooltip> -->
         <q-img spinner-color="grey" spinner-size="xs" width="60px" src="/png/whatsapp.png"></q-img>
       </q-btn>
     </q-page-sticky>
@@ -242,9 +242,7 @@ const onMouseLeaveFromMenu = () => {
   activeMenu.value = false;
 };
 
-// function toggleLeftDrawer() {
-//   leftDrawerOpen.value = !leftDrawerOpen.value;
-// }
+
 </script>
 
 <style scoped></style>

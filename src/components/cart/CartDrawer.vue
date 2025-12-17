@@ -16,7 +16,7 @@
               Mi carrito <span class="text-weight-regular">({{ products.length }})</span>
               <q-spinner class="q-ml-sm" color="primary" />
             </div>
-            <q-btn @click="onClose" icon="close" color="grey-6" size="md" round flat no-caps />
+            <q-btn @click="onClose" icon="close" color="grey-6" size="md" round flat/>
           </div>
         </q-card-section>
 
