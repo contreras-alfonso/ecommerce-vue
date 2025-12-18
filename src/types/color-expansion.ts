@@ -1,8 +1,9 @@
 
 export interface ColorExpansion {
   id: string;
+  colorId: string;
   colorName: string;
   colorHex: string;
   images: File[];
-  imagesString: string[];
+  tempImagesPreview: string[];
 }
