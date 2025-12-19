@@ -7,7 +7,7 @@
           :title="title"
           :visible="visible"
           :columns="columns"
-          :rows="rows"
+          :rows="brandStore.getAll"
           @on-handle-add="onHandleAdd"
           @on-handle-update="onHandleUpdate"
         />
@@ -24,14 +24,18 @@
   </q-page>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
-import { uid } from 'quasar';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Table from 'src/components/administration/Table.vue';
+import Management from 'src/components/administration/brands/Management.vue';
 import type { Brand } from 'src/types/brand';
 import type { ColumnTable } from 'src/types/column-table';
-import Management from 'src/components/administration/brands/Management.vue';
 import type { ManagementDialog } from 'src/types/management-dialog';
+import { useBrandStore } from 'src/stores/brand-store';
+import { useHelpers } from 'src/composables/helpers';
+
+const { handleApiError, onSpinner } = useHelpers();
+const brandStore = useBrandStore();
 
 const { t } = useI18n();
 const title = t('page.administration.brands.title', 2);
@@ -45,7 +49,7 @@ const dialogs = ref<{ management: ManagementDialog<Brand> }>({
   },
 });
 
-const visible: string[] = ['name', 'slug', 'created_at', 'updated_at'];
+const visible: string[] = ['name', 'slug', 'createdAt', 'updatedAt'];
 
 const columns: ColumnTable[] = [
   {
@@ -65,129 +69,42 @@ const columns: ColumnTable[] = [
   },
 
   {
-    name: 'created_at',
+    name: 'createdAt',
     label: 'Fecha de creación',
-    field: 'created_at',
+    field: 'createdAt',
     align: 'center',
     sortable: true,
   },
 
   {
-    name: 'updated_at',
+    name: 'updatedAt',
     label: 'Fecha de actualización',
-    field: 'updated_at',
+    field: 'updatedAt',
     align: 'center',
     sortable: true,
   },
 ];
 
-const rows: Brand[] = [
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:00:00',
-    updated_at: null,
-    name: 'Apple',
-    slug: 'apple',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:05:00',
-    updated_at: null,
-    name: 'Samsung',
-    slug: 'samsung',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:10:00',
-    updated_at: null,
-    name: 'Xiaomi',
-    slug: 'xiaomi',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:15:00',
-    updated_at: null,
-    name: 'Huawei',
-    slug: 'huawei',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:20:00',
-    updated_at: null,
-    name: 'Motorola',
-    slug: 'motorola',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:25:00',
-    updated_at: null,
-    name: 'Sony',
-    slug: 'sony',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:30:00',
-    updated_at: null,
-    name: 'LG',
-    slug: 'lg',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:35:00',
-    updated_at: null,
-    name: 'Nokia',
-    slug: 'nokia',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:40:00',
-    updated_at: null,
-    name: 'Realme',
-    slug: 'realme',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:45:00',
-    updated_at: null,
-    name: 'OnePlus',
-    slug: 'oneplus',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:50:00',
-    updated_at: null,
-    name: 'Oppo',
-    slug: 'oppo',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:55:00',
-    updated_at: null,
-    name: 'Asus',
-    slug: 'asus',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:00:00',
-    updated_at: null,
-    name: 'Lenovo',
-    slug: 'lenovo',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:05:00',
-    updated_at: null,
-    name: 'HP',
-    slug: 'hp',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:10:00',
-    updated_at: null,
-    name: 'Dell',
-    slug: 'dell',
-  },
-];
+onMounted(async () => {
+  await onLoad();
+});
+
+const onLoad = async () => {
+  onSpinner(true);
+  await Promise.all([fetchAll()])
+    .then(() => {})
+    .finally(() => {
+      onSpinner(false);
+    });
+};
+
+const fetchAll = async () => {
+  try {
+    await brandStore.fetchAll();
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 const onHandleUpdate = (brand: Brand): void => {
   dialogs.value.management.isOpen = true;

@@ -35,7 +35,7 @@
 
         <q-table
           class="q-mb-xl"
-          :rows="rows"
+          :rows="colorStore.getAll"
           :columns="columns"
           :visible-columns="visible"
           row-key="id"
@@ -146,8 +146,7 @@
 </template>
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { ref } from 'vue';
-import { uid } from 'quasar';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import InputElement from 'src/components/elements/Input.vue';
 import Management from 'src/components/administration/colors/Management.vue';
@@ -155,6 +154,11 @@ import Title from 'src/components/administration/Title.vue';
 import type { Color } from 'src/types/color';
 import type { ColumnTable } from 'src/types/column-table';
 import type { ManagementDialog } from 'src/types/management-dialog';
+import { useColorStore } from 'src/stores/color-store';
+import { useHelpers } from 'src/composables/helpers';
+
+const { handleApiError, onSpinner } = useHelpers();
+const colorStore = useColorStore();
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -176,7 +180,7 @@ const pagination = ref({
 
 const filter = ref<string>('');
 
-const visible: string[] = ['name', 'hex', 'created_at', 'updated_at'];
+const visible: string[] = ['name', 'hex', 'createdAt', 'updatedAt'];
 
 const columns: ColumnTable[] = [
   {
@@ -196,129 +200,42 @@ const columns: ColumnTable[] = [
   },
 
   {
-    name: 'created_at',
+    name: 'createdAt',
     label: 'Fecha de creación',
-    field: 'created_at',
+    field: 'createdAt',
     align: 'center',
     sortable: true,
   },
 
   {
-    name: 'updated_at',
+    name: 'updatedAt',
     label: 'Fecha de actualización',
-    field: 'updated_at',
+    field: 'updatedAt',
     align: 'center',
     sortable: true,
   },
 ];
 
-const rows: Color[] = [
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:00:00',
-    updated_at: null,
-    name: 'Negro',
-    hex: '#000000',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:05:00',
-    updated_at: null,
-    name: 'Blanco',
-    hex: '#FFFFFF',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:10:00',
-    updated_at: null,
-    name: 'Gris',
-    hex: '#9E9E9E',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:15:00',
-    updated_at: null,
-    name: 'Plateado',
-    hex: '#C0C0C0',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:20:00',
-    updated_at: null,
-    name: 'Dorado',
-    hex: '#FFD700',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:25:00',
-    updated_at: null,
-    name: 'Azul',
-    hex: '#2196F3',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:30:00',
-    updated_at: null,
-    name: 'Azul Oscuro',
-    hex: '#0D47A1',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:35:00',
-    updated_at: null,
-    name: 'Rojo',
-    hex: '#F44336',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:40:00',
-    updated_at: null,
-    name: 'Verde',
-    hex: '#4CAF50',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:45:00',
-    updated_at: null,
-    name: 'Verde Oscuro',
-    hex: '#1B5E20',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:50:00',
-    updated_at: null,
-    name: 'Amarillo',
-    hex: '#FFEB3B',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:55:00',
-    updated_at: null,
-    name: 'Naranja',
-    hex: '#FF9800',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:00:00',
-    updated_at: null,
-    name: 'Morado',
-    hex: '#9C27B0',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:05:00',
-    updated_at: null,
-    name: 'Rosado',
-    hex: '#E91E63',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:10:00',
-    updated_at: null,
-    name: 'Marrón',
-    hex: '#795548',
-  },
-];
+onMounted(async () => {
+  await onLoad();
+});
+
+const onLoad = async () => {
+  onSpinner(true);
+  await Promise.all([fetchAll()])
+    .then(() => {})
+    .finally(() => {
+      onSpinner(false);
+    });
+};
+
+const fetchAll = async () => {
+  try {
+    await colorStore.fetchAll();
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 const onHandleUpdate = (color: Color): void => {
   dialogs.value.management.isOpen = true;

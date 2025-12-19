@@ -129,7 +129,7 @@
                         <InputElement
                           label="Confirmar contraseña"
                           is-pwd
-                          :model-value="register.repeatPassword"
+                          :model-value="register.repeatPassword!"
                           @update:model-value="(val: string) => (register.repeatPassword = val)"
                           :outlined="true"
                           bg-color="white"
@@ -203,7 +203,14 @@ import { useRouter } from 'vue-router';
 import InputElement from 'src/components/elements/Input.vue';
 import SelectElement from 'src/components/elements/Select.vue';
 import type { SelectOption } from 'src/types/select-option';
+import type { RegisterRequest } from 'src/types/register-request';
+import { useAuth } from 'src/stores/auth-store';
+import { useHelpers } from 'src/composables/helpers';
+import { useNotify } from 'src/composables/notify';
 
+const { notifySuccess, notifyError } = useNotify();
+const { handleApiError, onSpinner } = useHelpers();
+const authStore = useAuth();
 const router = useRouter();
 
 const step = ref(1);
@@ -223,7 +230,7 @@ const options = ref<{ documentType: SelectOption[] }>({
   ],
 });
 
-const register = ref({
+const register = ref<RegisterRequest>({
   name: '',
   lastname: '',
   documentType: '',
@@ -233,6 +240,25 @@ const register = ref({
   repeatPassword: '',
 });
 
-const onRegister = (): void => {};
+const onRegister = async (): Promise<void> => {
+  if (register.value.repeatPassword !== register.value.password) {
+    return notifyError('Las contraseñas ingresadas no coinciden');
+  }
+
+  const payload: RegisterRequest = {
+    ...register.value,
+  };
+
+  onSpinner(true);
+  try {
+    await authStore.register(payload);
+    notifySuccess('Tu cuenta se creó correctamente. Ya puedes iniciar sesión.');
+    await router.push('/login');
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
+  }
+};
 </script>
 <style lang=""></style>

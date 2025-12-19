@@ -117,7 +117,7 @@
 </template>
 <script setup lang="ts" generic="T">
 import { useQuasar } from 'quasar';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import Title from './Title.vue';
 import InputElement from 'src/components/elements/Input.vue';
 import type { ColumnTable } from 'src/types/column-table';
@@ -153,5 +153,12 @@ const onHandleUpdate = (entity: T) => {
 const onHandleAdd = () => {
   emit('onHandleAdd');
 };
+
+watch(
+  () => props.rows,
+  (newValue) => {
+    localRows.value = newValue;
+  },
+);
 </script>
 <style lang="scss" scoped></style>

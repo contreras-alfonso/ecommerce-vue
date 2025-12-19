@@ -62,15 +62,16 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-// import { useServices } from 'src/stores/services'
 import InputElement from 'src/components/elements/Input.vue';
-// import { useNotify } from 'src/composables/notify';
 import type { Color } from 'src/types/color';
 import type { TypeManagement } from 'src/types/type-management';
 import { useHelpers } from 'src/composables/helpers';
 
-// const { notifySuccess, notifyError } = useNotify();
-// const serviceStore = useServices()
+import { useColorStore } from 'src/stores/color-store';
+import { useNotify } from 'src/composables/notify';
+
+const { notifySuccess } = useNotify();
+const colorStore = useColorStore();
 
 const emit = defineEmits(['onSubmit', 'onClose']);
 
@@ -80,7 +81,7 @@ const props = defineProps<{
   color?: Color | null;
 }>();
 
-const { onSpinner } = useHelpers();
+const { onSpinner, handleApiError } = useHelpers();
 
 const localTitle = props.title;
 
@@ -100,52 +101,45 @@ onMounted(() => {
   }
 });
 
-const onSubmit = () => {
+const onSubmit = async () => {
   onSpinner(true);
   const { id, name, hex } = localColor.value;
-  const payload = {
+  const payload: Color = {
     id,
     name,
     hex,
   };
-  console.log(payload);
+  onSpinner(true);
   if (props.typeManagement === 'EDIT') {
-    onEdit();
+    await onUpdate(payload);
   } else if (props.typeManagement === 'CREATE') {
-    onCreate();
+    await onCreate(payload);
   }
 };
 
-const onEdit = () => {
-  const result = {
-    status: false,
-  };
-  // const messages = {
-  //   ok: t('msg.success.update', 1),
-  //   error: t('msg.error.update', 1),
-  // };
-
-  // const result = await serviceStore.update(payload, notifySuccess, notifyError, messages)
-  if (result.status) {
+const onUpdate = async (payload: Color) => {
+  try {
+    const data = await colorStore.update(payload.id!, payload);
+    notifySuccess('Color actualizado correctamente');
+    emit('onSubmit', data);
     onClose();
-    emit('onSubmit', result);
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
   }
 };
 
-const onCreate = () => {
-  const result = {
-    status: false,
-  };
-  // const messages = {
-  //   ok: t('msg.success.create', 1),
-  //   error: t('msg.error.create', 1),
-  // };
-
-  // const result = await serviceStore.create(payload, notifySuccess, notifyError, messages)
-
-  if (result.status) {
+const onCreate = async (payload: Color) => {
+  try {
+    const data = await colorStore.create(payload);
+    notifySuccess('Color creado correctamente');
+    emit('onSubmit', data);
     onClose();
-    emit('onSubmit', result);
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
   }
 };
 

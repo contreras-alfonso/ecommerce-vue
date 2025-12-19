@@ -35,7 +35,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'account/:section',
         component: () => import('pages/Account.vue'),
-        meta: { title: 'Perfil', requiresAuth: true, rol: ['ADMIN'] },
+        meta: { title: 'Perfil', requiresAuth: true, rol: ['ADMIN', 'USER'] },
       },
     ],
   },

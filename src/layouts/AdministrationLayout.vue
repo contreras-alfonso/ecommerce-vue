@@ -3,7 +3,7 @@
     <q-header class="bg-white" bordered>
       <div class="column">
         <div class="row items-center full-width q-px-md q-py-sm">
-          <div class="col">
+          <div class="col-grow">
             <q-img
               @click="router.push('/')"
               class="cursor-pointer"
@@ -34,37 +34,44 @@
             </div>
           </div>
 
-          <div class="col">
+          <div class="col-grow">
             <div class="row items-end justify-end">
               <div class="row items-center text-grey-9 q-gutter-md">
-                <q-img class="cursor-pointer" style="width: 25px" src="/svg/account.svg" />
-                <q-menu>
-                  <div style="min-width: 250px" class="column q-col-gutter-sm q-pa-sm">
-                    <div class="">
-                      <q-btn
-                        @click="router.push('/')"
-                        class="full-width text-subtitle2 bg-secondary text-white"
-                        icon="storefront"
-                        flat
-                        label="Ir a la tienda"
-                        rounded
-                      ></q-btn>
-                    </div>
-
-                    <div class="">
-                      <q-btn
-                        @click="router.push('/logout')"
-                        class="full-width text-subtitle2"
-                        color="red"
-                        icon="exit_to_app"
-                        flat
-                        outline
-                        label="Cerrar sesión"
-                        rounded
-                      ></q-btn>
-                    </div>
+                <div
+                  class="row items-center q-col-gutter-x-sm hover-primary cursor-pointer non-selectable"
+                >
+                  <div>
+                    <q-icon size="25px" name="img:/svg/account.svg" />
                   </div>
-                </q-menu>
+                  <div>{{ authStore.getUser?.name }}</div>
+                  <q-menu>
+                    <div style="min-width: 250px" class="column q-col-gutter-sm q-pa-sm">
+                      <div class="">
+                        <q-btn
+                          @click="router.push('/')"
+                          class="full-width text-subtitle2 bg-secondary text-white"
+                          icon="storefront"
+                          flat
+                          label="Ir a la tienda"
+                          rounded
+                        ></q-btn>
+                      </div>
+
+                      <div class="">
+                        <q-btn
+                          @click="router.push('/logout')"
+                          class="full-width text-subtitle2"
+                          color="red"
+                          icon="exit_to_app"
+                          flat
+                          outline
+                          label="Cerrar sesión"
+                          rounded
+                        ></q-btn>
+                      </div>
+                    </div>
+                  </q-menu>
+                </div>
               </div>
             </div>
           </div>
@@ -90,8 +97,10 @@
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { uid } from 'quasar';
+import { useAuth } from 'src/stores/auth-store';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 
+const authStore = useAuth();
 const router = useRouter();
 const currentSectionActive = ref<string | null>(null);
 

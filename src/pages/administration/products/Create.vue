@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-py-xl q-px-md">
+  <q-page class="q-py-xl q-px-md bg-grey-2">
     <div class="row items-center justify-center">
       <q-form @submit="onSaveProduct" class="col-md-7 col-12 q-gutter-y-md">
         <Title :title="title" />

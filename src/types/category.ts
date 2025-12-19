@@ -2,6 +2,6 @@ export interface Category {
   id: string | null;
   name: string;
   slug: string;
-  created_at?: string;
-  updated_at?: string | null;
+  createdAt?: string;
+  updatedAt?: string | null;
 }

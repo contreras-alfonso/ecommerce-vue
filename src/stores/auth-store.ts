@@ -4,6 +4,8 @@ import { api } from 'boot/axios';
 import type { LoginRequest } from 'src/types/login-request';
 import type { AuthResponse } from 'src/types/auth-response';
 import type { AuthState } from 'src/types/store/auth-state';
+import type { RegisterRequest } from 'src/types/register-request';
+import type { RegisterResponse } from 'src/types/register-response';
 
 const USER_TYPE = ['ADMIN', 'USER'];
 const AUTH_TYPE = 'Bearer';
@@ -32,6 +34,11 @@ export const useAuth = defineStore('auth', {
       this.initUser(data);
       return data;
     },
+
+    async register(payload: RegisterRequest) {
+      await api.post<RegisterResponse>(`/api/auth/register`, payload);
+    },
+
     initUser(payload: AuthResponse) {
       const profile = {
         token: payload.token.accessToken,
@@ -52,7 +59,7 @@ export const useAuth = defineStore('auth', {
       }
     },
 
-    async fetch() {
+    async verify() {
       const token = this.getStorage('token');
 
       if (token && typeof token === 'string') {

@@ -7,7 +7,7 @@
           :title="title"
           :visible="visible"
           :columns="columns"
-          :rows="rows"
+          :rows="categoryStore.getAll"
           @on-handle-add="onHandleAdd"
           @on-handle-update="onHandleUpdate"
         />
@@ -24,14 +24,18 @@
   </q-page>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
-import { uid } from 'quasar';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Table from 'src/components/administration/Table.vue';
+import Management from 'src/components/administration/categories/Management.vue';
 import type { Category } from 'src/types/category';
 import type { ColumnTable } from 'src/types/column-table';
-import Management from 'src/components/administration/categories/Management.vue';
 import type { ManagementDialog } from 'src/types/management-dialog';
+import { useCategoryStore } from 'src/stores/category-store';
+import { useHelpers } from 'src/composables/helpers';
+
+const { handleApiError, onSpinner } = useHelpers();
+const categoryStore = useCategoryStore();
 
 const { t } = useI18n();
 const title = t('page.administration.categories.title', 2);
@@ -45,7 +49,7 @@ const dialogs = ref<{ management: ManagementDialog<Category> }>({
   },
 });
 
-const visible: string[] = ['name', 'slug', 'created_at', 'updated_at'];
+const visible: string[] = ['name', 'slug', 'createdAt', 'updatedAt'];
 
 const columns: ColumnTable[] = [
   {
@@ -65,129 +69,42 @@ const columns: ColumnTable[] = [
   },
 
   {
-    name: 'created_at',
+    name: 'createdAt',
     label: 'Fecha de creación',
-    field: 'created_at',
+    field: 'createdAt',
     align: 'center',
     sortable: true,
   },
 
   {
-    name: 'updated_at',
+    name: 'updatedAt',
     label: 'Fecha de actualización',
-    field: 'updated_at',
+    field: 'updatedAt',
     align: 'center',
     sortable: true,
   },
 ];
 
-const rows: Category[] = [
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:00:00',
-    updated_at: null,
-    name: 'Celulares',
-    slug: 'celulares',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:05:00',
-    updated_at: null,
-    name: 'Audífonos',
-    slug: 'audifonos',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:10:00',
-    updated_at: null,
-    name: 'Laptops',
-    slug: 'laptops',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:15:00',
-    updated_at: null,
-    name: 'Tablets',
-    slug: 'tablets',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:20:00',
-    updated_at: null,
-    name: 'Smartwatch',
-    slug: 'smartwatch',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:25:00',
-    updated_at: null,
-    name: 'Televisores',
-    slug: 'televisores',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:30:00',
-    updated_at: null,
-    name: 'Parlantes',
-    slug: 'parlantes',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:35:00',
-    updated_at: null,
-    name: 'Cámaras',
-    slug: 'camaras',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:40:00',
-    updated_at: null,
-    name: 'Accesorios',
-    slug: 'accesorios',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:45:00',
-    updated_at: null,
-    name: 'Gaming',
-    slug: 'gaming',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:50:00',
-    updated_at: null,
-    name: 'Monitores',
-    slug: 'monitores',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 10:55:00',
-    updated_at: null,
-    name: 'Teclados',
-    slug: 'teclados',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:00:00',
-    updated_at: null,
-    name: 'Mouse',
-    slug: 'mouse',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:05:00',
-    updated_at: null,
-    name: 'Impresoras',
-    slug: 'impresoras',
-  },
-  {
-    id: uid(),
-    created_at: '2025-12-11 11:10:00',
-    updated_at: null,
-    name: 'Redes y WiFi',
-    slug: 'redes-wifi',
-  },
-];
+onMounted(async () => {
+  await onLoad();
+});
+
+const onLoad = async () => {
+  onSpinner(true);
+  await Promise.all([fetchAll()])
+    .then(() => {})
+    .finally(() => {
+      onSpinner(false);
+    });
+};
+
+const fetchAll = async () => {
+  try {
+    await categoryStore.fetchAll();
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 const onHandleUpdate = (category: Category): void => {
   dialogs.value.management.isOpen = true;

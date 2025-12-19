@@ -101,7 +101,7 @@
     <div class="col-12" v-for="benefit in benefits" :key="benefit.description">
       <div class="row items-center q-col-gutter-x-xs">
         <div class="col-grow">
-          <q-img spinner-color="grey" spinner-size="sm" style="width: 20px" :src="benefit.img" />
+          <q-icon size="20px" :name="`img:${benefit.img}`" />
         </div>
         <div class="col">{{ benefit.description }}</div>
       </div>

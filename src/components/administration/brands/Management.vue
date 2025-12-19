@@ -61,15 +61,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-// import { useServices } from 'src/stores/services'
 import InputElement from 'src/components/elements/Input.vue';
-// import { useNotify } from 'src/composables/notify';
 import type { Brand } from 'src/types/brand';
 import type { TypeManagement } from 'src/types/type-management';
 import { useHelpers } from 'src/composables/helpers';
+import { useBrandStore } from 'src/stores/brand-store';
+import { useNotify } from 'src/composables/notify';
 
-// const { notifySuccess, notifyError } = useNotify();
-// const serviceStore = useServices()
+const { notifySuccess } = useNotify();
+const brandStore = useBrandStore();
 
 const emit = defineEmits(['onSubmit', 'onClose']);
 
@@ -79,7 +79,7 @@ const props = defineProps<{
   brand?: Brand | null;
 }>();
 
-const { onSpinner } = useHelpers();
+const { onSpinner, handleApiError } = useHelpers();
 
 const localTitle = props.title;
 
@@ -99,52 +99,45 @@ onMounted(() => {
   }
 });
 
-const onSubmit = () => {
+const onSubmit = async () => {
   onSpinner(true);
   const { id, name, slug } = localBrand.value;
-  const payload = {
+  const payload: Brand = {
     id,
     name,
     slug,
   };
-  console.log(payload);
+  onSpinner(true);
   if (props.typeManagement === 'EDIT') {
-    onEdit();
+    await onUpdate(payload);
   } else if (props.typeManagement === 'CREATE') {
-    onCreate();
+    await onCreate(payload);
   }
 };
 
-const onEdit = () => {
-  const result = {
-    status: false,
-  };
-  // const messages = {
-  //   ok: t('msg.success.update', 1),
-  //   error: t('msg.error.update', 1),
-  // };
-
-  // const result = await serviceStore.update(payload, notifySuccess, notifyError, messages)
-  if (result.status) {
+const onUpdate = async (payload: Brand) => {
+  try {
+    const data = await brandStore.update(payload.id!, payload);
+    notifySuccess('Marca actualizada correctamente');
+    emit('onSubmit', data);
     onClose();
-    emit('onSubmit', result);
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
   }
 };
 
-const onCreate = () => {
-  const result = {
-    status: false,
-  };
-  // const messages = {
-  //   ok: t('msg.success.create', 1),
-  //   error: t('msg.error.create', 1),
-  // };
-
-  // const result = await serviceStore.create(payload, notifySuccess, notifyError, messages)
-
-  if (result.status) {
+const onCreate = async (payload: Brand) => {
+  try {
+    const data = await brandStore.create(payload);
+    notifySuccess('Marca creada correctamente');
+    emit('onSubmit', data);
     onClose();
-    emit('onSubmit', result);
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
   }
 };
 

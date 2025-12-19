@@ -61,15 +61,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-// import { useServices } from 'src/stores/services'
 import InputElement from 'src/components/elements/Input.vue';
-// import { useNotify } from 'src/composables/notify';
+import { useNotify } from 'src/composables/notify';
+import { useCategoryStore } from 'src/stores/category-store';
 import type { Category } from 'src/types/category';
 import type { TypeManagement } from 'src/types/type-management';
 import { useHelpers } from 'src/composables/helpers';
 
-// const { notifySuccess, notifyError } = useNotify();
-// const serviceStore = useServices()
+const { notifySuccess } = useNotify();
+const categoryStore = useCategoryStore();
 
 const emit = defineEmits(['onSubmit', 'onClose']);
 
@@ -79,7 +79,7 @@ const props = defineProps<{
   category?: Category | null;
 }>();
 
-const { onSpinner } = useHelpers();
+const { onSpinner, handleApiError } = useHelpers();
 
 const localTitle = props.title;
 
@@ -99,52 +99,44 @@ onMounted(() => {
   }
 });
 
-const onSubmit = () => {
-  onSpinner(true);
+const onSubmit = async () => {
   const { id, name, slug } = localCategory.value;
-  const payload = {
+  const payload: Category = {
     id,
     name,
     slug,
   };
-  console.log(payload);
+  onSpinner(true);
   if (props.typeManagement === 'EDIT') {
-    onEdit();
+    await onUpdate(payload);
   } else if (props.typeManagement === 'CREATE') {
-    onCreate();
+    await onCreate(payload);
   }
 };
 
-const onEdit = () => {
-  const result = {
-    status: false,
-  };
-  // const messages = {
-  //   ok: t('msg.success.update', 1),
-  //   error: t('msg.error.update', 1),
-  // };
-
-  // const result = await serviceStore.update(payload, notifySuccess, notifyError, messages)
-  if (result.status) {
+const onUpdate = async (payload: Category) => {
+  try {
+    const data = await categoryStore.update(payload.id!, payload);
+    notifySuccess('Categoría actualizada correctamente');
+    emit('onSubmit', data);
     onClose();
-    emit('onSubmit', result);
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
   }
 };
 
-const onCreate = () => {
-  const result = {
-    status: false,
-  };
-  // const messages = {
-  //   ok: t('msg.success.create', 1),
-  //   error: t('msg.error.create', 1),
-  // };
-
-  // const result = await serviceStore.create(payload, notifySuccess, notifyError, messages)
-
-  if (result.status) {
+const onCreate = async (payload: Category) => {
+  try {
+    const data = await categoryStore.create(payload);
+    notifySuccess('Categoría creada correctamente');
+    emit('onSubmit', data);
     onClose();
-    emit('onSubmit', result);
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
   }
 };
 

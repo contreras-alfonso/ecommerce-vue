@@ -99,7 +99,7 @@ const { handleApiError, onSpinner } = useHelpers();
 onMounted(async () => {
   await nextTick();
   if (authStore.isAuthenticated) {
-    router.push('/');
+    await router.push('/');
   }
 });
 
@@ -108,7 +108,7 @@ const login = ref<LoginRequest>({
   password: '',
 });
 
-const onLogin = async () => {
+const onLogin = async (): Promise<void> => {
   const payload: LoginRequest = {
     ...login.value,
   };

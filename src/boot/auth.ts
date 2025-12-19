@@ -10,7 +10,7 @@ export default boot(({ router }) => {
 
     authStore.setVerifyingAuth(true);
 
-    await authStore.fetch();
+    await authStore.verify();
 
     if (requiresAuth) {
       try {

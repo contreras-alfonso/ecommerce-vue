@@ -41,7 +41,7 @@
                   class="row items-center q-col-gutter-x-sm hover-primary cursor-pointer non-selectable"
                 >
                   <div>
-                    <q-img style="width: 25px" src="/svg/account.svg" />
+                    <q-icon size="25px" name="img:/svg/account.svg" />
                   </div>
                   <div>{{ authStore.getUser?.name }}</div>
                   <q-menu>
@@ -83,27 +83,27 @@
                     </div>
                   </q-menu>
                 </div>
-                <q-img
+                <q-icon
                   @click="mainStore.cartDrawer = true"
                   class="cursor-pointer"
-                  style="width: 25px"
-                  src="/svg/cart.svg"
+                  size="25px"
+                  name="img:/svg/cart.svg"
                 />
               </div>
 
               <div v-else class="row items-center text-grey-9 q-gutter-md">
-                <q-img
+                <q-icon
                   @click="router.push('/login')"
                   class="cursor-pointer"
-                  style="width: 25px"
-                  src="/svg/account.svg"
+                  size="25px"
+                  name="img:/svg/account.svg"
                 />
 
-                <q-img
+                <q-icon
                   @click="mainStore.cartDrawer = true"
                   class="cursor-pointer"
-                  style="width: 25px"
-                  src="/svg/cart.svg"
+                  size="25px"
+                  name="img:/svg/cart.svg"
                 />
               </div>
             </div>
@@ -112,11 +112,11 @@
       </div>
     </q-header>
 
-    <ProductCategoryMenu
+    <!-- <ProductCategoryMenu
       :current-category="currentCategoryActive"
       :is-active="activeMenu"
       @onMouseLeaveFromMenu="onMouseLeaveFromMenu"
-    />
+    /> -->
 
     <q-drawer behavior="mobile" v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
@@ -183,7 +183,7 @@ import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink
 import { useMainStore } from 'src/stores/main-store';
 import { useAuth } from 'src/stores/auth-store';
 import CartDrawer from 'src/components/cart/CartDrawer.vue';
-import ProductCategoryMenu from 'src/components/products/ProductCategoryMenu.vue';
+// import ProductCategoryMenu from 'src/components/products/ProductCategoryMenu.vue';
 
 const authStore = useAuth();
 const currentCategoryActive = ref<string | null>(null);
@@ -297,10 +297,10 @@ const linksList: EssentialLinkProps[] = [
 
 const leftDrawerOpen = ref(false);
 
-const onMouseLeaveFromMenu = () => {
-  currentCategoryActive.value = null;
-  activeMenu.value = false;
-};
+// const onMouseLeaveFromMenu = () => {
+//   currentCategoryActive.value = null;
+//   activeMenu.value = false;
+// };
 </script>
 
 <style scoped></style>
