@@ -3,7 +3,7 @@
     <q-header class="bg-white" bordered>
       <div class="column">
         <div class="row items-center full-width q-px-md">
-          <div class="col">
+          <div class="col-grow">
             <q-img
               @click="router.push('/')"
               class="cursor-pointer"
@@ -31,15 +31,61 @@
             </div>
           </div>
 
-          <div class="col">
+          <div v-if="!authStore.isVerifyingAuth" class="col-grow">
             <div class="row items-end justify-end">
-              <div class="row items-center text-grey-9 q-gutter-md">
+              <div
+                v-if="authStore.isAuthenticated"
+                class="row items-center text-grey-9 q-gutter-md"
+              >
+                <div class="row items-center q-col-gutter-x-sm hover-primary cursor-pointer">
+                  <div>
+                    <q-img style="width: 25px" src="/svg/account.svg" />
+                  </div>
+                  <div>{{ authStore.getUser?.name }}</div>
+                  <q-menu>
+                    <q-list style="width: 200px">
+                      <q-item clickable>
+                        <q-item-section>
+                          <div
+                            @click="router.push('/account/profile')"
+                            class="row items-center q-gutter-x-sm text-grey-10"
+                          >
+                            <q-icon size="sm" color="" name="account_circle" />
+                            <div class="">Mi perfil</div>
+                          </div>
+                        </q-item-section>
+                      </q-item>
+                      <q-separator></q-separator>
+                      <q-item clickable>
+                        <q-item-section>
+                          <div
+                            @click="router.push('/logout')"
+                            class="row items-center q-gutter-x-sm text-red"
+                          >
+                            <q-icon size="sm" name="logout" />
+                            <div class="">Cerrar sesión</div>
+                          </div>
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </div>
+                <q-img
+                  @click="mainStore.cartDrawer = true"
+                  class="cursor-pointer"
+                  style="width: 25px"
+                  src="/svg/cart.svg"
+                />
+              </div>
+
+              <div v-else class="row items-center text-grey-9 q-gutter-md">
                 <q-img
                   @click="router.push('/login')"
                   class="cursor-pointer"
                   style="width: 25px"
                   src="/svg/account.svg"
                 />
+
                 <q-img
                   @click="mainStore.cartDrawer = true"
                   class="cursor-pointer"
@@ -108,7 +154,6 @@
 
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn round flat>
-        <!-- <q-tooltip class="bg-positive" :offset="[10, 10]"> Contáctanos</q-tooltip> -->
         <q-img spinner-color="grey" spinner-size="xs" width="60px" src="/png/whatsapp.png"></q-img>
       </q-btn>
     </q-page-sticky>
@@ -123,9 +168,11 @@ import { ref } from 'vue';
 import { uid } from 'quasar';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 import { useMainStore } from 'src/stores/main-store';
+import { useAuth } from 'src/stores/auth-store';
 import CartDrawer from 'src/components/cart/CartDrawer.vue';
 import ProductCategoryMenu from 'src/components/products/ProductCategoryMenu.vue';
 
+const authStore = useAuth();
 const currentCategoryActive = ref<string | null>(null);
 const activeMenu = ref<boolean>(false);
 const router = useRouter();
@@ -241,8 +288,6 @@ const onMouseLeaveFromMenu = () => {
   currentCategoryActive.value = null;
   activeMenu.value = false;
 };
-
-
 </script>
 
 <style scoped></style>

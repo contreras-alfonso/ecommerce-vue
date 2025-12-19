@@ -37,12 +37,34 @@
           <div class="col">
             <div class="row items-end justify-end">
               <div class="row items-center text-grey-9 q-gutter-md">
-                <q-img
-                  @click="router.push('/login')"
-                  class="cursor-pointer"
-                  style="width: 25px"
-                  src="/svg/account.svg"
-                />
+                <q-img class="cursor-pointer" style="width: 25px" src="/svg/account.svg" />
+                <q-menu>
+                  <q-list style="width: 200px">
+                    <q-item clickable>
+                      <q-item-section>
+                        <div
+                          @click="router.push('/')"
+                          class="row items-center q-gutter-x-sm text-grey-10"
+                        >
+                          <q-icon size="sm" color="" name="storefront" />
+                          <div class="">Ir a la tienda</div>
+                        </div>
+                      </q-item-section>
+                    </q-item>
+                    <q-separator></q-separator>
+                    <q-item clickable>
+                      <q-item-section>
+                        <div
+                          @click="router.push('/logout')"
+                          class="row items-center q-gutter-x-sm text-red"
+                        >
+                          <q-icon size="sm" name="logout" />
+                          <div class="">Cerrar sesión</div>
+                        </div>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
               </div>
             </div>
           </div>

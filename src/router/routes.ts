@@ -6,11 +6,37 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'login', component: () => import('pages/Login.vue') },
-      { path: 'register', component: () => import('pages/Register.vue') },
-      { path: 'product/:id', component: () => import('pages/Product.vue') },
-      { path: 'store/:id', component: () => import('pages/Store.vue') },
-      { path: 'account/:section', component: () => import('pages/Account.vue') },
+      {
+        path: 'login',
+        component: () => import('pages/auth/Login.vue'),
+        meta: { title: 'Cerrar Sesión', requiresAuth: false },
+      },
+
+      {
+        path: 'logout',
+        component: () => import('pages/auth/Logout.vue'),
+        meta: { title: 'Iniciar Sesión', requiresAuth: false },
+      },
+      {
+        path: 'register',
+        component: () => import('pages/auth/Register.vue'),
+        meta: { title: 'Regístrate', requiresAuth: false },
+      },
+      {
+        path: 'product/:id',
+        component: () => import('pages/Product.vue'),
+        meta: { title: 'Regístrate', requiresAuth: false },
+      },
+      {
+        path: 'store/:id',
+        component: () => import('pages/Store.vue'),
+        meta: { title: 'Tienda', requiresAuth: false },
+      },
+      {
+        path: 'account/:section',
+        component: () => import('pages/Account.vue'),
+        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+      },
     ],
   },
 
@@ -18,11 +44,31 @@ const routes: RouteRecordRaw[] = [
     path: '/administration',
     component: () => import('layouts/AdministrationLayout.vue'),
     children: [
-      { path: 'products', component: () => import('pages/administration/products/Index.vue') },
-      { path: 'products/:id', component: () => import('pages/administration/products/Create.vue') },
-      { path: 'categories', component: () => import('pages/administration/categories/Index.vue') },
-      { path: 'brands', component: () => import('pages/administration/brands/Index.vue') },
-      { path: 'colors', component: () => import('pages/administration/colors/Index.vue') },
+      {
+        path: 'products',
+        component: () => import('pages/administration/products/Index.vue'),
+        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+      },
+      {
+        path: 'products/:id',
+        component: () => import('pages/administration/products/Create.vue'),
+        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+      },
+      {
+        path: 'categories',
+        component: () => import('pages/administration/categories/Index.vue'),
+        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+      },
+      {
+        path: 'brands',
+        component: () => import('pages/administration/brands/Index.vue'),
+        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+      },
+      {
+        path: 'colors',
+        component: () => import('pages/administration/colors/Index.vue'),
+        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+      },
     ],
   },
 

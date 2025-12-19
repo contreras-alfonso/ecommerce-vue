@@ -1,7 +1,11 @@
+import { AxiosError } from 'axios';
 import { useQuasar, openURL } from 'quasar';
+import { useNotify } from 'src/composables/notify';
+import type { ErrorResponse } from 'src/types/error-response';
 
 export function useHelpers() {
   const $q = useQuasar();
+  const { notifyError } = useNotify();
 
   const onSpinner = (status: boolean) => {
     if (status) {
@@ -30,9 +34,19 @@ export function useHelpers() {
     }).format(amount);
   };
 
+  const handleApiError = (error: unknown) => {
+    if (error instanceof AxiosError) {
+      const data = error.response?.data as ErrorResponse;
+      notifyError(data?.msg ?? 'Error inesperado');
+    } else {
+      notifyError('Ocurrió un error desconocido');
+    }
+  };
+
   return {
     onSpinner,
     openUrl,
     formatAmount,
+    handleApiError,
   };
 }

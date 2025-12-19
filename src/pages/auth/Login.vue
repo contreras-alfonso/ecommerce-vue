@@ -4,7 +4,7 @@
       <div class="col-md-8 col-12">
         <div class="row">
           <div class="col">
-            <div class="row">
+            <q-form @submit="onLogin" class="row">
               <div class="col-sm-10 col-12 column q-col-gutter-y-md">
                 <div class="text-h4 text-weight-bold">Iniciar sesión</div>
                 <div>Si ya estás registrado, accede con tu correo electrónico.</div>
@@ -43,13 +43,14 @@
 
                 <div>
                   <q-btn
+                    type="submit"
                     flat
                     class="bg-secondary text-white q-py-md text-weight-regular full-width"
                     label="Iniciar sesión"
                   ></q-btn>
                 </div>
               </div>
-            </div>
+            </q-form>
           </div>
 
           <div class="col-grow">
@@ -66,6 +67,7 @@
                 </div>
                 <div>
                   <q-btn
+                    type="button"
                     @click="router.push('/register')"
                     flat
                     class="bg-secondary text-white q-py-md text-weight-regular full-width"
@@ -82,14 +84,45 @@
 </template>
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
+import type { LoginRequest } from 'src/types/login-request';
+import { useAuth } from 'src/stores/auth-store';
+import { useNotify } from 'src/composables/notify';
+import { useHelpers } from 'src/composables/helpers';
 
 const router = useRouter();
+const authStore = useAuth();
+const { notifySuccess } = useNotify();
+const { handleApiError, onSpinner } = useHelpers();
 
-const login = ref({
+onMounted(async () => {
+  await nextTick();
+  if (authStore.isAuthenticated) {
+    router.push('/');
+  }
+});
+
+const login = ref<LoginRequest>({
   email: '',
   password: '',
 });
+
+const onLogin = async () => {
+  const payload: LoginRequest = {
+    ...login.value,
+  };
+
+  onSpinner(true);
+  try {
+    await authStore.login(payload);
+    notifySuccess('Sesión iniciada correctamente');
+    await router.push('/');
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
+  }
+};
 </script>
 <style lang=""></style>
