@@ -37,37 +37,50 @@
                 v-if="authStore.isAuthenticated"
                 class="row items-center text-grey-9 q-gutter-md"
               >
-                <div class="row items-center q-col-gutter-x-sm hover-primary cursor-pointer">
+                <div
+                  class="row items-center q-col-gutter-x-sm hover-primary cursor-pointer non-selectable"
+                >
                   <div>
                     <q-img style="width: 25px" src="/svg/account.svg" />
                   </div>
                   <div>{{ authStore.getUser?.name }}</div>
                   <q-menu>
-                    <q-list style="width: 200px">
-                      <q-item clickable>
-                        <q-item-section>
-                          <div
-                            @click="router.push('/account/profile')"
-                            class="row items-center q-gutter-x-sm text-grey-10"
-                          >
-                            <q-icon size="sm" color="" name="account_circle" />
-                            <div class="">Mi perfil</div>
-                          </div>
-                        </q-item-section>
-                      </q-item>
-                      <q-separator></q-separator>
-                      <q-item clickable>
-                        <q-item-section>
-                          <div
-                            @click="router.push('/logout')"
-                            class="row items-center q-gutter-x-sm text-red"
-                          >
-                            <q-icon size="sm" name="logout" />
-                            <div class="">Cerrar sesión</div>
-                          </div>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
+                    <div style="min-width: 250px" class="column q-col-gutter-sm q-pa-sm">
+                      <div v-if="authStore.getRole === 'ADMIN'" class="">
+                        <q-btn
+                          @click="router.push('/administration/products')"
+                          class="full-width text-subtitle2 bg-secondary text-white"
+                          icon="manage_accounts"
+                          flat
+                          label="Panel administrativo"
+                          rounded
+                        ></q-btn>
+                      </div>
+
+                      <div class="">
+                        <q-btn
+                          @click="router.push('/account/profile')"
+                          class="full-width text-subtitle2"
+                          color="grey-10"
+                          icon="person"
+                          flat
+                          label="Mi perfil"
+                          rounded
+                        ></q-btn>
+                      </div>
+
+                      <div class="">
+                        <q-btn
+                          @click="router.push('/logout')"
+                          class="full-width text-subtitle2"
+                          color="red"
+                          icon="exit_to_app"
+                          flat
+                          label="Cerrar sesión"
+                          rounded
+                        ></q-btn>
+                      </div>
+                    </div>
                   </q-menu>
                 </div>
                 <q-img

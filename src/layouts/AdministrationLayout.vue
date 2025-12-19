@@ -39,31 +39,31 @@
               <div class="row items-center text-grey-9 q-gutter-md">
                 <q-img class="cursor-pointer" style="width: 25px" src="/svg/account.svg" />
                 <q-menu>
-                  <q-list style="width: 200px">
-                    <q-item clickable>
-                      <q-item-section>
-                        <div
-                          @click="router.push('/')"
-                          class="row items-center q-gutter-x-sm text-grey-10"
-                        >
-                          <q-icon size="sm" color="" name="storefront" />
-                          <div class="">Ir a la tienda</div>
-                        </div>
-                      </q-item-section>
-                    </q-item>
-                    <q-separator></q-separator>
-                    <q-item clickable>
-                      <q-item-section>
-                        <div
-                          @click="router.push('/logout')"
-                          class="row items-center q-gutter-x-sm text-red"
-                        >
-                          <q-icon size="sm" name="logout" />
-                          <div class="">Cerrar sesión</div>
-                        </div>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
+                  <div style="min-width: 250px" class="column q-col-gutter-sm q-pa-sm">
+                    <div class="">
+                      <q-btn
+                        @click="router.push('/')"
+                        class="full-width text-subtitle2 bg-secondary text-white"
+                        icon="storefront"
+                        flat
+                        label="Ir a la tienda"
+                        rounded
+                      ></q-btn>
+                    </div>
+
+                    <div class="">
+                      <q-btn
+                        @click="router.push('/logout')"
+                        class="full-width text-subtitle2"
+                        color="red"
+                        icon="exit_to_app"
+                        flat
+                        outline
+                        label="Cerrar sesión"
+                        rounded
+                      ></q-btn>
+                    </div>
+                  </div>
                 </q-menu>
               </div>
             </div>

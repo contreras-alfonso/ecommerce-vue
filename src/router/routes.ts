@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'product/:id',
         component: () => import('pages/Product.vue'),
-        meta: { title: 'Regístrate', requiresAuth: false },
+        meta: { title: 'Producto', requiresAuth: false },
       },
       {
         path: 'store/:id',
@@ -35,7 +35,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'account/:section',
         component: () => import('pages/Account.vue'),
-        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+        meta: { title: 'Perfil', requiresAuth: true, rol: ['ADMIN'] },
       },
     ],
   },
@@ -43,40 +43,46 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/administration',
     component: () => import('layouts/AdministrationLayout.vue'),
+    redirect: '/administration/products',
     children: [
       {
         path: 'products',
         component: () => import('pages/administration/products/Index.vue'),
-        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+        meta: { title: 'Productos', requiresAuth: true, rol: ['ADMIN'] },
       },
       {
         path: 'products/:id',
         component: () => import('pages/administration/products/Create.vue'),
-        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+        meta: { title: 'Producto', requiresAuth: true, rol: ['ADMIN'] },
       },
       {
         path: 'categories',
         component: () => import('pages/administration/categories/Index.vue'),
-        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+        meta: { title: 'Categorías', requiresAuth: true, rol: ['ADMIN'] },
       },
       {
         path: 'brands',
         component: () => import('pages/administration/brands/Index.vue'),
-        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+        meta: { title: 'Marcas', requiresAuth: true, rol: ['ADMIN'] },
       },
       {
         path: 'colors',
         component: () => import('pages/administration/colors/Index.vue'),
-        meta: { title: 'Iniciar Sesión', requiresAuth: true, rol: ['ADMIN'] },
+        meta: { title: 'Colores', requiresAuth: true, rol: ['ADMIN'] },
       },
     ],
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/ErrorNotFound.vue'),
+        meta: { title: 'Cerrar Sesión', requiresAuth: false },
+      },
+    ],
   },
 ];
 

@@ -1,21 +1,35 @@
 <template>
-  <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
-    <div>
-      <div style="font-size: 30vh">404</div>
+  <q-page>
+    <div class="q-py-xl text-grey-10 text-center q-pa-md flex flex-center">
+      <div>
+        <div class="text-h1 text-primary text-weight-bold">404</div>
 
-      <div class="text-h2" style="opacity: 0.4">Oops. Nothing here...</div>
+        <div
+          :class="{ 'text-h5': $q.screen.lt.sm, 'text-h4': !$q.screen.lt.sm }"
+          class="text-weight-bolder"
+        >
+          ¡Oops! Página no encontrada
+        </div>
 
-      <q-btn
-        class="q-mt-xl"
-        color="white"
-        text-color="blue"
-        unelevated
-        to="/"
-        label="Go Home"
-        no-caps
-      />
+        <div
+          :class="{
+            'text-subtitle1': $q.screen.lt.sm,
+            'text-h6': !$q.screen.lt.sm,
+          }"
+          class="text-weight-regular q-mt-sm text-grey-8"
+        >
+          Parece que la página que buscas se fue de vacaciones.
+        </div>
+
+        <q-btn
+          flat
+          class="q-mt-xl q-px-xl q-py-md bg-secondary text-white"
+          to="/"
+          label="Ir al inicio"
+        />
+      </div>
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">
