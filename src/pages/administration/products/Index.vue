@@ -35,7 +35,7 @@
 
         <q-table
           class="q-mb-xl"
-          :rows="rows"
+          :rows="[]"
           :columns="columns"
           :visible-columns="visible"
           row-key="id"
@@ -137,15 +137,19 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import InputElement from 'src/components/elements/Input.vue';
 import Title from 'src/components/administration/Title.vue';
 import type { ColumnTable } from 'src/types/column-table';
 import type { ProductTable } from 'src/types/product-table';
-import { products } from 'src/data/products';
 import type { ProductResponse } from 'src/types/product-response';
 import { ProductMapper } from 'src/mappers/product.mapper';
+import { useProductStore } from 'src/stores/product-store';
+import { useHelpers } from 'src/composables/helpers';
+
+const { handleApiError, onSpinner } = useHelpers();
+const productStore = useProductStore();
 
 const router = useRouter();
 const $q = useQuasar();
@@ -166,7 +170,7 @@ const visible: string[] = [
   'brandName',
   'categoryName',
   'createdAt',
-  'updateAt',
+  'updatedAt',
 ];
 
 const columns: ColumnTable[] = [
@@ -201,17 +205,17 @@ const columns: ColumnTable[] = [
   },
 
   {
-    name: 'created_at',
+    name: 'createdAt',
     label: 'Fecha de creación',
-    field: 'created_at',
+    field: 'createdAt',
     align: 'center',
     sortable: true,
   },
 
   {
-    name: 'updated_at',
+    name: 'updatedAt',
     label: 'Fecha de actualización',
-    field: 'updated_at',
+    field: 'updatedAt',
     align: 'center',
     sortable: true,
   },
@@ -219,12 +223,33 @@ const columns: ColumnTable[] = [
 
 const rows = ref<ProductTable[]>([]);
 
-onMounted(() => {
-  // simular la petición
-  // TODO: luego será de tipo Product[] y ya no ProductResponse[]
-  const productsData: ProductResponse[] = products;
-  rows.value = ProductMapper.mapProductToProductTableArray(productsData);
+//onMounted(() => {
+// simular la petición
+// TODO: luego será de tipo Product[] y ya no ProductResponse[]
+//const productsData: ProductResponse[] = products;
+//rows.value = ProductMapper.mapProductToProductTableArray(productsData);
+//});
+
+onMounted(async () => {
+  await onLoad();
 });
+
+const onLoad = async () => {
+  onSpinner(true);
+  await Promise.all([fetchAll()])
+    .then(() => {})
+    .finally(() => {
+      onSpinner(false);
+    });
+};
+
+const fetchAll = async () => {
+  try {
+    await productStore.fetchAll();
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 const onHandleUpdate = (product: ProductTable): void => {
   console.log(product);
@@ -233,5 +258,12 @@ const onHandleUpdate = (product: ProductTable): void => {
 const onHandleAdd = async () => {
   await router.push('/administration/products/new');
 };
+
+watch(
+  () => productStore.getAll,
+  (newValue: ProductResponse[]) => {
+    rows.value = ProductMapper.mapProductToProductTableArray(newValue);
+  },
+);
 </script>
 <style lang=""></style>
