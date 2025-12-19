@@ -35,7 +35,7 @@
 
         <q-table
           class="q-mb-xl"
-          :rows="[]"
+          :rows="rows"
           :columns="columns"
           :visible-columns="visible"
           row-key="id"
@@ -170,7 +170,7 @@ const visible: string[] = [
   'brandName',
   'categoryName',
   'createdAt',
-  'updatedAt',
+  'updateAt',
 ];
 
 const columns: ColumnTable[] = [
@@ -213,9 +213,9 @@ const columns: ColumnTable[] = [
   },
 
   {
-    name: 'updatedAt',
+    name: 'updateAt',
     label: 'Fecha de actualización',
-    field: 'updatedAt',
+    field: 'updateAt',
     align: 'center',
     sortable: true,
   },

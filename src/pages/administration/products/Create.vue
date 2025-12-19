@@ -329,8 +329,9 @@
   </q-page>
 </template>
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import { QFile, QForm, uid } from 'quasar';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Title from 'src/components/administration/Title.vue';
 import InputElement from 'src/components/elements/Input.vue';
@@ -343,15 +344,28 @@ import type { Color } from 'src/types/color';
 import type { ColorExpansion } from 'src/types/color-expansion';
 import type { ManagementDialog } from 'src/types/management-dialog';
 import type { Variant } from 'src/types/variant-add';
+import { useCategoryStore } from 'src/stores/category-store';
+import { useBrandStore } from 'src/stores/brand-store';
+import { useColorStore } from 'src/stores/color-store';
+import { useHelpers } from 'src/composables/helpers';
+import { useProductStore } from 'src/stores/product-store';
+import type { Category } from 'src/types/category';
+import type { Brand } from 'src/types/brand';
 
 const disableToggle = computed(() => {
   const filter = variantsAdded.value.filter((variant) => variant.ram || variant.storage);
   return filter.length > 0;
 });
 
-const { t } = useI18n();
-
+const router = useRouter();
+const productStore = useProductStore();
+const categoryStore = useCategoryStore();
+const brandStore = useBrandStore();
+const colorStore = useColorStore();
+const { onSpinner, handleApiError } = useHelpers();
 const { notifySuccess, notifyError } = useNotify();
+
+const { t } = useI18n();
 
 const title = t('page.administration.products.new');
 
@@ -397,63 +411,9 @@ const options = ref<{
   storage: SelectOption[];
   colorSelected: Color[];
 }>({
-  category: [
-    {
-      name: 'Celulares',
-      id: uid(),
-    },
-    {
-      name: 'Audifonos',
-      id: uid(),
-    },
-  ],
-  brand: [
-    {
-      name: 'Xiaomi',
-      id: uid(),
-    },
-    {
-      name: 'Samsung',
-      id: uid(),
-    },
-  ],
-  color: [
-    {
-      id: uid(),
-      created_at: '2025-12-11 10:00:00',
-      updated_at: null,
-      name: 'Negro',
-      hex: '#000000',
-    },
-    {
-      id: uid(),
-      created_at: '2025-12-11 10:05:00',
-      updated_at: null,
-      name: 'Blanco',
-      hex: '#FFFFFF',
-    },
-    {
-      id: uid(),
-      created_at: '2025-12-11 10:10:00',
-      updated_at: null,
-      name: 'Gris',
-      hex: '#9E9E9E',
-    },
-    {
-      id: uid(),
-      created_at: '2025-12-11 10:15:00',
-      updated_at: null,
-      name: 'Plateado',
-      hex: '#C0C0C0',
-    },
-    {
-      id: uid(),
-      created_at: '2025-12-11 10:20:00',
-      updated_at: null,
-      name: 'Dorado',
-      hex: '#FFD700',
-    },
-  ],
+  category: [],
+  brand: [],
+  color: [],
   ram: [
     { id: '2GB', name: '2GB' },
     { id: '4GB', name: '4GB' },
@@ -476,12 +436,44 @@ const options = ref<{
   colorSelected: [],
 });
 
-const onSaveProduct = () => {
-  console.log(usesTechnicalVariants.value);
-  console.log(variantsAdded.value);
-  console.log(product.value);
-  console.log(colorExpansionItems.value);
+onMounted(async () => {
+  await onLoad();
+});
 
+const onLoad = async () => {
+  onSpinner(true);
+  await Promise.all([fetchCategories(), fetchBrands(), fetchColors()])
+    .then(() => {})
+    .finally(() => {
+      onSpinner(false);
+    });
+};
+
+const fetchCategories = async () => {
+  try {
+    await categoryStore.fetchAll();
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+const fetchBrands = async () => {
+  try {
+    await brandStore.fetchAll();
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+const fetchColors = async () => {
+  try {
+    await colorStore.fetchAll();
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+const onSaveProduct = async () => {
   const payload = {
     name: product.value.name,
     description: product.value.description,
@@ -514,8 +506,16 @@ const onSaveProduct = () => {
       formData.append(`${uid()}__${expansion.colorId}`, image);
     });
   });
-
-  console.log([...formData]);
+  onSpinner(true);
+  try {
+    await productStore.create(formData);
+    notifySuccess('Producto creado correctamente');
+    await router.push('/administration/products');
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
+  }
 };
 
 const onDeleteVariant = (variantId: string) => {
@@ -582,8 +582,6 @@ const onUploadImagesToSlider = (val: FileList) => {
   if (!val || val.length === 0) return;
 
   const { validFiles, previews } = validateAndPreviewFiles(val);
-  console.log(validFiles);
-  console.log(previews);
   const findExpansionItems = colorExpansionItems.value.find(
     (expansion) => expansion.id === expansionActiveId.value,
   );
@@ -656,6 +654,33 @@ const onSelectColor = (colorId: string) => {
   notifySuccess('El color ha sido agregado');
   onCloseDialog();
 };
+
+watch(
+  () => categoryStore.getAll,
+  (newValue: Category[]) => {
+    options.value.category = newValue.map((category) => ({
+      id: category.id!,
+      name: category.name,
+    }));
+  },
+);
+
+watch(
+  () => brandStore.getAll,
+  (newValue: Brand[]) => {
+    options.value.brand = newValue.map((brand) => ({
+      id: brand.id!,
+      name: brand.name,
+    }));
+  },
+);
+
+watch(
+  () => colorStore.getAll,
+  (newValue: Color[]) => {
+    options.value.color = newValue;
+  },
+);
 </script>
 <style lang="scss" scoped>
 .q-editor {

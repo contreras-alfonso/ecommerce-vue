@@ -25,8 +25,8 @@ export const useProductStore = defineStore('product', {
       return data;
     },
 
-    async create(product: ProductResponse) {
-      const { data } = await api.post<ProductResponse>(`/api/products`, product);
+    async create(formData: FormData) {
+      const { data } = await api.post<ProductResponse>(`/api/products`, formData);
       this.products.push(data);
       return data;
     },
