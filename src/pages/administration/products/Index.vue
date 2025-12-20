@@ -143,7 +143,7 @@ import InputElement from 'src/components/elements/Input.vue';
 import Title from 'src/components/administration/Title.vue';
 import type { ColumnTable } from 'src/types/column-table';
 import type { ProductTable } from 'src/types/product-table';
-import type { ProductResponse } from 'src/types/product-response';
+import type { Product } from 'src/types/product';
 import { ProductMapper } from 'src/mappers/product.mapper';
 import { useProductStore } from 'src/stores/product-store';
 import { useHelpers } from 'src/composables/helpers';
@@ -223,13 +223,6 @@ const columns: ColumnTable[] = [
 
 const rows = ref<ProductTable[]>([]);
 
-//onMounted(() => {
-// simular la petición
-// TODO: luego será de tipo Product[] y ya no ProductResponse[]
-//const productsData: ProductResponse[] = products;
-//rows.value = ProductMapper.mapProductToProductTableArray(productsData);
-//});
-
 onMounted(async () => {
   await onLoad();
 });
@@ -261,7 +254,7 @@ const onHandleAdd = async () => {
 
 watch(
   () => productStore.getAll,
-  (newValue: ProductResponse[]) => {
+  (newValue: Product[]) => {
     rows.value = ProductMapper.mapProductToProductTableArray(newValue);
   },
 );

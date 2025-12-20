@@ -1,8 +1,8 @@
-import type { ProductResponse } from 'src/types/product-response';
+import type { Product } from 'src/types/product';
 import type { ProductTable } from 'src/types/product-table';
 
 export class ProductMapper {
-  static mapProductResponseToProductTable(product: ProductResponse): ProductTable {
+  static mapProductToProductTable(product: Product): ProductTable {
     return {
       id: product.brand.id,
       name: product.name,
@@ -14,7 +14,7 @@ export class ProductMapper {
     };
   }
 
-  static mapProductToProductTableArray(products: ProductResponse[]) {
-    return products.map((product) => this.mapProductResponseToProductTable(product));
+  static mapProductToProductTableArray(products: Product[]) {
+    return products.map((product) => this.mapProductToProductTable(product));
   }
 }

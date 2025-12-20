@@ -28,8 +28,8 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Producto', requiresAuth: false },
       },
       {
-        path: '/:id',
-        component: () => import('pages/Store.vue'),
+        path: '/:categorySlug',
+        component: () => import('pages/Catalog.vue'),
         meta: { title: 'Tienda', requiresAuth: false },
       },
       {

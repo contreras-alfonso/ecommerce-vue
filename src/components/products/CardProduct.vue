@@ -7,17 +7,17 @@
     >
       <div class="col">
         <q-card-section>
-          <q-img spinner-color="grey" :src="product?.img" />
+          <q-img spinner-color="grey" :src="product.colorImages[0]?.url" />
         </q-card-section>
 
         <q-card-section class="q-pt-none">
           <!-- <div class="text-caption fs-14">{{ product?.brand }}</div> -->
-          <q-badge class="q-px-md q-py-xs" rounded color="primary" :label="product?.brand" />
+          <q-badge class="q-px-md q-py-xs" rounded color="primary" :label="product.brand.name" />
 
           <div class="text-subtitle1 q-my-sm text-grey-10" style="line-height: 20px">
-            {{ product?.name }}
+            {{ product.name }}
           </div>
-          <div class="text-h6 fw-500 fs-18 text-secondary">S/ {{ product?.price }}</div>
+          <div class="text-h6 fw-500 fs-18 text-secondary">S/ {{ product.variants[0]?.price }}</div>
         </q-card-section>
       </div>
 

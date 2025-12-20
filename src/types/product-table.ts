@@ -1,4 +1,4 @@
-import type { ColorImage } from './product-response';
+import type { ColorImage } from './product';
 
 export interface ProductTable {
   id: string | null;

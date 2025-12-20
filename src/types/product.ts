@@ -1,7 +1,34 @@
+import type { Brand } from './brand';
+import type { Category } from './category';
+import type { Color } from './color';
+
 export interface Product {
+  brand: Brand;
+  category: Category;
+  colorImages: ColorImage[];
+  createdAt: string;
+  description: string;
   id: string;
-  brand: string;
   name: string;
+  slug: string;
+  updatedAt: string;
+  usesTechnicalVariants: boolean;
+  variants: Variant[];
+}
+
+export interface ColorImage {
+  id: string;
+  url: string;
+  color: Color;
+}
+
+export interface Variant {
+  id: string;
+  ram: string;
+  storage: string;
   price: number;
-  img: string;
+  stock: number;
+  color: Color;
+  createdAt?: string;
+  updatedAt?: string;
 }

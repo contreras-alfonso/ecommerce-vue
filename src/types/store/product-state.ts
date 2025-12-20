@@ -1,5 +1,5 @@
-import type { ProductResponse } from 'src/types/product-response';
+import type { Product } from 'src/types/product';
 
 export interface ProductState {
-  products: ProductResponse[];
+  products: Product[];
 }

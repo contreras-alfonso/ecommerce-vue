@@ -1,6 +1,6 @@
-import type { ProductResponse } from 'src/types/product-response';
+import type { Product } from 'src/types/product';
 
-export const products: ProductResponse[] = [
+export const products: Product[] = [
   {
     brand: {
       id: 'c874d794-61c8-453d-ac7f-2c449a1e3179',
