@@ -8,8 +8,6 @@ export default boot(({ router }) => {
     const requiresAuth = to.meta?.requiresAuth || false;
     const allowedRoles = (to.meta?.rol as string[]) ?? [];
 
-    authStore.setVerifyingAuth(true);
-
     await authStore.verify();
 
     if (requiresAuth) {
@@ -29,7 +27,5 @@ export default boot(({ router }) => {
     } else {
       next();
     }
-
-    authStore.setVerifyingAuth(false);
   });
 });

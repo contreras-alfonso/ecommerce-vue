@@ -98,12 +98,12 @@
   </div>
 
   <div class="row q-col-gutter-y-sm">
-    <div class="col-12" v-for="benefit in benefits" :key="benefit.description">
+    <div class="col-12" v-for="benefit in benefits" :key="benefit.title">
       <div class="row items-center q-col-gutter-x-xs">
         <div class="col-grow">
           <q-icon size="20px" :name="`img:${benefit.img}`" />
         </div>
-        <div class="col">{{ benefit.description }}</div>
+        <div class="col">{{ benefit.title }}</div>
       </div>
     </div>
   </div>
@@ -135,19 +135,19 @@ const colors = ref([
 const benefits = ref<Benefit[]>([
   {
     img: '/svg/gift.svg',
-    description: 'Disfruta de un regalo GRATIS con tu compra. Cantidad limitada.',
+    title: 'Disfruta de un regalo GRATIS con tu compra. Cantidad limitada.',
   },
   {
     img: '/svg/verify.svg',
-    description: 'Política de devolución de 15 días.',
+    title: 'Política de devolución de 15 días.',
   },
   {
     img: '/svg/security.svg',
-    description: 'Compra 100% segura.',
+    title: 'Compra 100% segura.',
   },
   {
     img: '/svg/shipment.svg',
-    description: 'Envíos rápidos y seguros.',
+    title: 'Envíos rápidos y seguros.',
   },
 ]);
 </script>

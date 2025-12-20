@@ -22,12 +22,9 @@ export const useAuth = defineStore('auth', {
     getUser: (state) => state.user,
     getRole: (state) => state.role,
     isAuthenticated: (state) => state.authenticated,
-    isVerifyingAuth: (state) => state.verifyingAuth,
   },
   actions: {
-    setVerifyingAuth(status: boolean) {
-      this.verifyingAuth = status;
-    },
+
     async login(payload: LoginRequest) {
       const response = await api.post<AuthResponse>(`/api/auth/login`, payload);
       const data = response.data;

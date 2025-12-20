@@ -17,19 +17,18 @@
           <div class="col" v-if="$q.screen.gt.sm">
             <div class="row justify-center q-col-gutter-x-sm">
               <div v-for="(page, index) in list.nav" :key="index">
-                <q-btn
-                  @click="
-                    (router.push(`/administration/${page.url}`), (currentSectionActive = page.id))
-                  "
-                  rounded
-                  flat
-                  :label="page.title"
-                  class="text-capitalize fw-400"
-                  :class="{
-                    'bg-primary': currentSectionActive === page.id,
-                    'text-black': currentSectionActive !== page.id,
-                  }"
-                />
+                <router-link :to="page.url" v-slot="{ isActive }">
+                  <q-btn
+                    flat
+                    rounded
+                    class="text-capitalize fw-400"
+                    :label="page.title"
+                    :class="{
+                      'bg-primary text-white': isActive,
+                      'text-black': !isActive,
+                    }"
+                  />
+                </router-link>
               </div>
             </div>
           </div>
@@ -49,7 +48,7 @@
                       <div class="">
                         <q-btn
                           @click="router.push('/')"
-                          class="full-width text-subtitle2 bg-secondary text-white"
+                          class="full-width bg-secondary text-white"
                           icon="storefront"
                           flat
                           label="Ir a la tienda"
@@ -60,7 +59,7 @@
                       <div class="">
                         <q-btn
                           @click="router.push('/logout')"
-                          class="full-width text-subtitle2"
+                          class="full-width"
                           color="red"
                           icon="exit_to_app"
                           flat
@@ -102,29 +101,28 @@ import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink
 
 const authStore = useAuth();
 const router = useRouter();
-const currentSectionActive = ref<string | null>(null);
 
 const list = ref({
   nav: [
     {
       id: uid(),
       title: 'Productos',
-      url: 'products',
+      url: '/administration/products',
     },
     {
       id: uid(),
       title: 'Categorías',
-      url: 'categories',
+      url: '/administration/categories',
     },
     {
       id: uid(),
       title: 'Marcas',
-      url: 'brands',
+      url: '/administration/brands',
     },
     {
       id: uid(),
       title: 'Colores',
-      url: 'colors',
+      url: '/administration/colors',
     },
   ],
 });

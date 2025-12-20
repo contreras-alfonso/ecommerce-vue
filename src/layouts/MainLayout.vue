@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-white" bordered>
       <div class="column">
-        <div class="row items-center full-width q-px-md">
+        <div class="row items-center full-width q-px-md q-py-sm">
           <div class="col-grow">
             <q-img
               @click="router.push('/')"
@@ -15,23 +15,33 @@
           </div>
 
           <div class="col" v-if="$q.screen.gt.sm">
-            <div class="row justify-center">
-              <div v-for="(page, index) in list.nav" :key="index">
-                <q-btn
-                  flat
-                  :label="page.title"
-                  class="text-capitalize fw-400 q-py-md"
-                  :class="{
-                    'text-primary': currentCategoryActive === page.id,
-                    'text-black': currentCategoryActive !== page.id,
-                  }"
-                  @mouseover="((currentCategoryActive = page.id), (activeMenu = true))"
-                />
-              </div>
+            <div class="row justify-center q-col-gutter-x-sm">
+              <template v-if="loading.categories">
+                <div v-for="i in 4" :key="i">
+                  <q-skeleton class="bg-grey-3" width="100px" height="30px" type="QChip" />
+                </div>
+              </template>
+
+              <template v-else>
+                <div v-for="(page, index) in list.nav" :key="index">
+                  <router-link :to="page.url" v-slot="{ isActive }">
+                    <q-btn
+                      flat
+                      rounded
+                      class="text-capitalize fw-400"
+                      :label="page.title"
+                      :class="{
+                        'bg-primary text-white': isActive,
+                        'text-black': !isActive,
+                      }"
+                    />
+                  </router-link>
+                </div>
+              </template>
             </div>
           </div>
 
-          <div v-if="!authStore.isVerifyingAuth" class="col-grow">
+          <div class="col-grow">
             <div class="row items-end justify-end">
               <div
                 v-if="authStore.isAuthenticated"
@@ -49,7 +59,7 @@
                       <div v-if="authStore.getRole === 'ADMIN'" class="">
                         <q-btn
                           @click="router.push('/administration/products')"
-                          class="full-width text-subtitle2 bg-secondary text-white"
+                          class="full-width bg-secondary text-white"
                           icon="manage_accounts"
                           flat
                           label="Panel administrativo"
@@ -60,7 +70,7 @@
                       <div class="">
                         <q-btn
                           @click="router.push('/account/profile')"
-                          class="full-width text-subtitle2"
+                          class="full-width"
                           color="grey-10"
                           icon="person"
                           flat
@@ -72,7 +82,7 @@
                       <div class="">
                         <q-btn
                           @click="router.push('/logout')"
-                          class="full-width text-subtitle2"
+                          class="full-width"
                           color="red"
                           icon="exit_to_app"
                           flat
@@ -111,12 +121,6 @@
         </div>
       </div>
     </q-header>
-
-    <!-- <ProductCategoryMenu
-      :current-category="currentCategoryActive"
-      :is-active="activeMenu"
-      @onMouseLeaveFromMenu="onMouseLeaveFromMenu"
-    /> -->
 
     <q-drawer behavior="mobile" v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
@@ -177,52 +181,27 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
-import { uid } from 'quasar';
+import { onMounted, ref, watch } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 import { useMainStore } from 'src/stores/main-store';
 import { useAuth } from 'src/stores/auth-store';
+import { useCategoryStore } from 'src/stores/category-store';
 import CartDrawer from 'src/components/cart/CartDrawer.vue';
-// import ProductCategoryMenu from 'src/components/products/ProductCategoryMenu.vue';
+import type { Category } from 'src/types/category';
+import type { Navigation } from 'src/types/navigation';
+import type { Benefit } from 'src/types/benefit';
 
+const categoryStore = useCategoryStore();
 const authStore = useAuth();
-const currentCategoryActive = ref<string | null>(null);
-const activeMenu = ref<boolean>(false);
 const router = useRouter();
 const mainStore = useMainStore();
 
-const list = ref({
-  nav: [
-    { id: uid(), title: 'Resúmen', url: 'resumen', isMovil: false, isAuth: false },
-    {
-      id: uid(),
-      title: 'Celulares',
-      url: '/reembolsos',
-      isMovil: false,
-      isAuth: false,
-    },
-    {
-      id: uid(),
-      title: 'Tablets',
-      url: '/comprobantes',
-      isMovil: false,
-      isAuth: false,
-    },
-    {
-      id: uid(),
-      title: 'Relojes',
-      url: '/gastos-de-movilidad',
-      isMovil: false,
-      isAuth: false,
-    },
-    {
-      id: uid(),
-      title: 'Audio',
-      url: '/reembolsos-y-pagos',
-      isMovil: false,
-      isAuth: false,
-    },
-  ],
+const loading = ref({
+  categories: false,
+});
+
+const list = ref<{ nav: Navigation[]; benefits: Benefit[] }>({
+  nav: [],
   benefits: [
     {
       img: '/svg/envios.svg',
@@ -295,12 +274,35 @@ const linksList: EssentialLinkProps[] = [
   },
 ];
 
+onMounted(async () => {
+  await onLoad();
+});
+
+const onLoad = async () => {
+  loading.value.categories = true;
+  await Promise.all([fetchCategories()])
+    .then(() => {})
+    .finally(() => {
+      loading.value.categories = false;
+    });
+};
+
+const fetchCategories = async () => {
+  await categoryStore.fetchAll();
+};
+
 const leftDrawerOpen = ref(false);
 
-// const onMouseLeaveFromMenu = () => {
-//   currentCategoryActive.value = null;
-//   activeMenu.value = false;
-// };
+watch(
+  () => categoryStore.getAll,
+  (newValue: Category[]) => {
+    list.value.nav = newValue.map((category) => ({
+      id: category.id!,
+      title: category.name,
+      url: `/${category.slug}`,
+    }));
+  },
+);
 </script>
 
 <style scoped></style>

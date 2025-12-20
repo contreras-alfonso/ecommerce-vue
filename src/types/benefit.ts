@@ -1,4 +1,5 @@
 export interface Benefit {
   img: string;
-  description: string;
+  title: string;
+  subtitle?: string;
 }
