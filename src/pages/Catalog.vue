@@ -11,28 +11,46 @@
             <div class="text-h5 text-weight-bold">Celulares</div>
             <ProductFilter
               :available-brands="availableFilters?.brands ?? []"
-              :selected-brands="appliedFilters.brand"
+              :selected-brand="appliedFilters.brand"
               :range-price="appliedFilters.rangePrice"
-              :base-max-price="appliedFilters.rangePrice.max ?? 0"
               :base-min-price="appliedFilters.rangePrice.min ?? 0"
+              :base-max-price="appliedFilters.rangePrice.max ?? 0"
               :total-elements="totalElements"
               @onChangeRangePrice="onChangeRangePrice"
-              @onChangeBrands="onChangeBrands"
+              @onChangeBrand="onChangeBrand"
             />
           </div>
 
           <div class="col-10">
-            <div class="row items-center q-col-gutter-x-sm">
+            <div
+              v-if="showRangePriceChip || appliedFilters.brand"
+              class="row items-center q-col-gutter-x-sm"
+            >
               <div class="bg-grey-3 q-py-sm q-px-md">Filtrando por:</div>
               <div>
                 <q-chip
+                  v-if="showRangePriceChip"
                   removable
-                  @remove="console.log('Icecream')"
+                  @remove="onRemoveFilterRangePrice"
                   color="light-blue-6"
                   text-color="white"
-                  icon="filter_alt"
+                  icon="search"
                 >
-                  Precio: S/ 100 - S/200
+                  Precio: S/ {{ appliedFilters.rangePrice.min }} - S/
+                  {{ appliedFilters.rangePrice.max }}
+                </q-chip>
+              </div>
+
+              <div>
+                <q-chip
+                  v-if="appliedFilters.brand"
+                  removable
+                  @remove="onChangeBrand('')"
+                  color="light-blue-6"
+                  text-color="white"
+                  icon="search"
+                >
+                  Marca: {{ catalogStore.getBrandNameById(appliedFilters.brand) }}
                 </q-chip>
               </div>
             </div>
@@ -117,7 +135,7 @@ const { onSpinner } = useHelpers();
 
 const categorySlug = ref<string | null>(null);
 
-const appliedFiltersHasRangePriceBase = ref(false);
+const filtersHasRangePrice = ref(false);
 
 const appliedFilters = ref<Filters>({
   orderBy: 'created_asc',
@@ -125,7 +143,7 @@ const appliedFilters = ref<Filters>({
     min: 0,
     max: 0,
   },
-  brand: [],
+  brand: '',
   page: 1,
 });
 
@@ -135,7 +153,7 @@ const defaultFilters = ref<Filters>({
     min: 0,
     max: 0,
   },
-  brand: [],
+  brand: '',
   page: 1,
 });
 
@@ -174,6 +192,13 @@ const options = ref<{ orderBy: SelectOption[]; brand: SelectOption[] }>({
   ],
 });
 
+const showRangePriceChip = computed(() => {
+  return (
+    appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
+    appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max
+  );
+});
+
 const queryToSend = computed((): string => {
   let query = '';
 
@@ -183,7 +208,7 @@ const queryToSend = computed((): string => {
     query += `page=${page - 1}`;
   }
   if (appliedFilters.value.orderBy !== defaultFilters.value.orderBy) {
-    query += `sort=${orderBy}`;
+    query += `&sort=${orderBy}`;
   }
   if (
     appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
@@ -193,7 +218,7 @@ const queryToSend = computed((): string => {
   }
 
   if (appliedFilters.value.brand.length > 0) {
-    query += `&brandIds=${brand.join(',')}`;
+    query += `&brandId=${brand}`;
   }
 
   return query;
@@ -204,6 +229,15 @@ onMounted(async () => {
   onSetFiltersFromQuery();
   await onLoad();
 });
+
+const onRemoveFilterRangePrice = () => {
+  filtersHasRangePrice.value = false;
+  const rangePrice: PriceRange = {
+    min: defaultFilters.value.rangePrice.min,
+    max: defaultFilters.value.rangePrice.max,
+  };
+  onChangeRangePrice(rangePrice);
+};
 
 const onSetCategorySlug = () => {
   if (route.params.categorySlug) {
@@ -241,8 +275,8 @@ const onChangeRangePrice = async (range: PriceRange): Promise<void> => {
   await refreshCatalog();
 };
 
-const onChangeBrands = async (brands: string[]): Promise<void> => {
-  appliedFilters.value.brand = brands;
+const onChangeBrand = async (brand: string): Promise<void> => {
+  appliedFilters.value.brand = brand;
   await refreshCatalog();
 };
 
@@ -255,7 +289,6 @@ const refreshCatalog = async () => {
 
 const onUpdateQuery = async () => {
   const query: ProductQuery = {};
-
   if (
     appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
     appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max
@@ -265,7 +298,7 @@ const onUpdateQuery = async () => {
   }
 
   if (appliedFilters.value.brand.length > 0) {
-    query.brand = appliedFilters.value.brand.join(',');
+    query.brand = appliedFilters.value.brand;
   }
 
   if (appliedFilters.value.page !== defaultFilters.value.page) {
@@ -287,10 +320,12 @@ const onSetFiltersFromQuery = (): void => {
       min: Number(min_price),
       max: Number(max_price),
     };
+    filtersHasRangePrice.value = true;
+    console.log(appliedFilters.value.rangePrice);
   }
 
   if (brand) {
-    appliedFilters.value.brand = String(brand).split(',');
+    appliedFilters.value.brand = String(brand);
   }
 
   if (page) {
@@ -312,13 +347,13 @@ watch(
       totalPages.value = newValue.products.totalPages;
       availableFilters.value = newValue.filters;
       // Asignar valores de filtros
-      defaultFilters.value.rangePrice.max = newValue.filters.maxPrice;
-      defaultFilters.value.rangePrice.min = newValue.filters.minPrice;
 
-      if (!appliedFiltersHasRangePriceBase.value) {
+      if (!filtersHasRangePrice.value) {
+        defaultFilters.value.rangePrice.max = newValue.filters.maxPrice;
+        defaultFilters.value.rangePrice.min = newValue.filters.minPrice;
         appliedFilters.value.rangePrice.max = newValue.filters.maxPrice;
         appliedFilters.value.rangePrice.min = newValue.filters.minPrice;
-        appliedFiltersHasRangePriceBase.value = true;
+        filtersHasRangePrice.value = true;
       }
     }
   },

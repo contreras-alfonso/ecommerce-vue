@@ -4,17 +4,15 @@
     <q-separator spaced></q-separator>
     <div class="text-uppercase">
       Precio:
-      <span class="text-secondary">S/ {{ appliedFilters.rangePrice.min }}</span>
-      <span class="text-secondary" v-if="totalElements > 1">
-        - S/ {{ appliedFilters.rangePrice.max }}</span
-      >
+      <span class="text-secondary">S/ {{ localBaseMinPrice }}</span>
+      <span class="text-secondary" v-if="totalElements > 1"> - S/ {{ localBaseMaxPrice }}</span>
     </div>
     <template v-if="totalElements > 1">
       <q-range
         label
         v-model="appliedFilters.rangePrice"
-        :min="baseMinPrice"
-        :max="baseMaxPrice"
+        :min="localBaseMinPrice"
+        :max="localBaseMaxPrice"
         color="light-blue-6
 
 "
@@ -37,14 +35,13 @@
 
     <div class="text-uppercase">Marcas</div>
     <div class="column">
-      <q-checkbox
-        @update:model-value="onChangeBrands"
+      <q-radio
         v-for="brand in availableBrands"
         :key="brand.id"
-        v-model="appliedFilters.brands"
+        @update:model-value="onChangeBrand"
+        v-model="appliedFilters.brand"
         :val="brand.id"
         :label="`${brand.name}  (${brand.count})`"
-        size="sm"
         color="light-blue-6"
       />
     </div>
@@ -55,19 +52,22 @@ import type { PriceRange } from 'src/types/price-range';
 import type { BrandElement } from 'src/types/product-search-response';
 import { ref, watch } from 'vue';
 
-const emit = defineEmits(['onChangeRangePrice', 'onChangeBrands']);
+const emit = defineEmits(['onChangeRangePrice', 'onChangeBrand']);
 
 const props = defineProps<{
   rangePrice: PriceRange;
   availableBrands: BrandElement[];
-  selectedBrands: string[];
+  selectedBrand: string;
   baseMaxPrice: number;
   baseMinPrice: number;
   totalElements: number;
 }>();
 
+const localBaseMinPrice = ref(props.baseMinPrice);
+const localBaseMaxPrice = ref(props.baseMaxPrice);
+
 const appliedFilters = ref({
-  brands: props.selectedBrands,
+  brand: props.selectedBrand,
   rangePrice: props.rangePrice,
 });
 
@@ -75,21 +75,14 @@ const onChangeRangePrice = (): void => {
   emit('onChangeRangePrice', appliedFilters.value.rangePrice);
 };
 
-const onChangeBrands = (brands: string[]): void => {
-  emit('onChangeBrands', brands);
+const onChangeBrand = (brands: string[]): void => {
+  emit('onChangeBrand', brands);
 };
 
 watch(
-  () => props.selectedBrands,
-  (val: string[]) => {
-    appliedFilters.value.brands = val;
-  },
-);
-
-watch(
-  () => props.selectedBrands,
-  (val: string[]) => {
-    appliedFilters.value.brands = val;
+  () => props.selectedBrand,
+  (val: string) => {
+    appliedFilters.value.brand = val;
   },
 );
 
@@ -97,6 +90,20 @@ watch(
   () => props.rangePrice,
   (val: PriceRange) => {
     appliedFilters.value.rangePrice = val;
+  },
+);
+
+watch(
+  () => props.baseMinPrice,
+  (val: number) => {
+    localBaseMinPrice.value = val;
+  },
+);
+
+watch(
+  () => props.baseMaxPrice,
+  (val: number) => {
+    localBaseMaxPrice.value = val;
   },
 );
 </script>
