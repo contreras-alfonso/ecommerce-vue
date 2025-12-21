@@ -10,23 +10,45 @@
           <div class="col-2">
             <div class="text-h5 text-weight-bold">Celulares</div>
             <ProductFilter
-              :range-price="filters.rangePrice"
-              :brands="options.brand"
+              :available-brands="availableFilters?.brands ?? []"
+              :selected-brands="appliedFilters.brand"
+              :range-price="appliedFilters.rangePrice"
+              :base-max-price="appliedFilters.rangePrice.max ?? 0"
+              :base-min-price="appliedFilters.rangePrice.min ?? 0"
+              :total-elements="totalElements"
               @onChangeRangePrice="onChangeRangePrice"
               @onChangeBrands="onChangeBrands"
             />
           </div>
 
           <div class="col-10">
+            <div class="row items-center q-col-gutter-x-sm">
+              <div class="bg-grey-3 q-py-sm q-px-md">Filtrando por:</div>
+              <div>
+                <q-chip
+                  removable
+                  @remove="console.log('Icecream')"
+                  color="light-blue-6"
+                  text-color="white"
+                  icon="filter_alt"
+                >
+                  Precio: S/ 100 - S/200
+                </q-chip>
+              </div>
+            </div>
+
             <div class="row items-center justify-between">
-              <div class="text-secondary">120 productos encontrados</div>
+              <div class="text-secondary">
+                {{ totalElements }}
+                {{ totalElements === 1 ? 'producto econtrado' : 'productos econtrados' }}
+              </div>
               <div class="row items-center q-col-gutter-x-sm">
                 <div class="text-secondary">Ordenar por:</div>
                 <div>
                   <SelectElement
                     dense
                     style="width: 200px"
-                    :model-value="filters.orderBy"
+                    :model-value="appliedFilters.orderBy"
                     @update:model-value="(val: string) => onChangeOrderBy(val)"
                     :options="options.orderBy"
                     :outlined="true"
@@ -54,7 +76,11 @@
         </div>
 
         <div class="flex flex-center q-py-md">
-          <Pagination :current-page="filters.page" @onChangePage="onChangePage" />
+          <Pagination
+            :current-page="appliedFilters.page"
+            :max-pages="totalPages"
+            @onChangePage="onChangePage"
+          />
         </div>
       </div>
     </div>
@@ -62,7 +88,7 @@
 </template>
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { uid } from 'quasar';
 import BreadCrum from 'src/components/shared/BreadCrum.vue';
 import SelectElement from 'src/components/elements/Select.vue';
@@ -76,7 +102,11 @@ import { useHelpers } from 'src/composables/helpers';
 import Pagination from 'src/components/shared/Pagination.vue';
 import type { Filters } from 'src/types/filters';
 import type { ProductQuery } from 'src/types/product-query';
-import type { ProductSearchResponse } from 'src/types/product-search-response';
+import type {
+  AvailableFilters,
+  Pageable,
+  ProductSearchResponse,
+} from 'src/types/product-search-response';
 import { useCatalogStore } from 'src/stores/catalog-store';
 
 const catalogStore = useCatalogStore();
@@ -87,27 +117,33 @@ const { onSpinner } = useHelpers();
 
 const categorySlug = ref<string | null>(null);
 
-const filters = ref<Filters>({
-  orderBy: 'MAYOR_MENOR',
+const appliedFiltersHasRangePriceBase = ref(false);
+
+const appliedFilters = ref<Filters>({
+  orderBy: 'created_asc',
   rangePrice: {
     min: 0,
-    max: 35,
+    max: 0,
   },
   brand: [],
   page: 1,
 });
 
 const defaultFilters = ref<Filters>({
-  orderBy: 'MAYOR_MENOR',
+  orderBy: 'created_asc',
   rangePrice: {
     min: 0,
-    max: 35,
+    max: 0,
   },
   brand: [],
   page: 1,
 });
 
+const totalElements = ref(0);
+const totalPages = ref(0);
 const products = ref<Product[]>([]);
+const pageable = ref<Pageable | null>(null);
+const availableFilters = ref<AvailableFilters | null>(null);
 
 const options = ref<{ orderBy: SelectOption[]; brand: SelectOption[] }>({
   brand: [
@@ -125,23 +161,48 @@ const options = ref<{ orderBy: SelectOption[]; brand: SelectOption[] }>({
   orderBy: [
     {
       name: 'De mayor a menor precio',
-      id: 'MAYOR_MENOR',
+      id: 'price_desc',
     },
     {
       name: 'De menor a mayor precio',
-      id: 'MENOR_PRECIO',
+      id: 'price_asc',
     },
     {
       name: 'Nuevos ingresos',
-      id: 'NUEVOS_INGRESOS',
+      id: 'created_asc',
     },
   ],
 });
 
+const queryToSend = computed((): string => {
+  let query = '';
+
+  const { page, brand, orderBy, rangePrice } = appliedFilters.value;
+
+  if (appliedFilters.value.page !== defaultFilters.value.page) {
+    query += `page=${page - 1}`;
+  }
+  if (appliedFilters.value.orderBy !== defaultFilters.value.orderBy) {
+    query += `sort=${orderBy}`;
+  }
+  if (
+    appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
+    appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max
+  ) {
+    query += `&minPrice=${rangePrice.min}&maxPrice=${rangePrice.max}`;
+  }
+
+  if (appliedFilters.value.brand.length > 0) {
+    query += `&brandIds=${brand.join(',')}`;
+  }
+
+  return query;
+});
+
 onMounted(async () => {
   onSetCategorySlug();
-  await onLoad();
   onSetFiltersFromQuery();
+  await onLoad();
 });
 
 const onSetCategorySlug = () => {
@@ -154,100 +215,90 @@ const onSetCategorySlug = () => {
 
 const onLoad = async () => {
   onSpinner(true);
-  await Promise.all([fetchByFilters()])
+  await Promise.all([fetchCatalogByFilters()])
     .then(() => {})
     .finally(() => {
       onSpinner(false);
     });
 };
 
-const fetchByFilters = async () => {
-  await catalogStore.fetchByFilters(categorySlug.value!);
+const fetchCatalogByFilters = async () => {
+  await catalogStore.fetchByFilters(categorySlug.value!, queryToSend.value);
 };
 
-const onChangeOrderBy = (orderBy: string): void => {
-  filters.value.orderBy = orderBy;
-  onUpdateQuery();
-  setTimeout(() => {
-    onSpinner(false);
-  }, 2000);
+const onChangeOrderBy = async (orderBy: string): Promise<void> => {
+  appliedFilters.value.orderBy = orderBy;
+  await refreshCatalog();
 };
 
-const onChangePage = (page: number): void => {
-  filters.value.page = page;
-  onUpdateQuery();
-  onSpinner(true);
-  setTimeout(() => {
-    onSpinner(false);
-  }, 2000);
+const onChangePage = async (page: number): Promise<void> => {
+  appliedFilters.value.page = page;
+  await refreshCatalog();
 };
 
-const onChangeRangePrice = (range: PriceRange): void => {
-  filters.value.rangePrice = range;
-  onUpdateQuery();
-  onSpinner(true);
-  setTimeout(() => {
-    onSpinner(false);
-  }, 2000);
+const onChangeRangePrice = async (range: PriceRange): Promise<void> => {
+  appliedFilters.value.rangePrice = range;
+  await refreshCatalog();
 };
 
-const onChangeBrands = (brands: string[]): void => {
-  filters.value.brand = brands;
+const onChangeBrands = async (brands: string[]): Promise<void> => {
+  appliedFilters.value.brand = brands;
+  await refreshCatalog();
+};
+
+const refreshCatalog = async () => {
   onUpdateQuery();
   onSpinner(true);
-  setTimeout(() => {
-    onSpinner(false);
-  }, 2000);
-  // notifyError('Oops no se pudo aplicar los filtros');
-  // notifySuccess('Oops no se pudo aplicar los filtros');
+  await fetchCatalogByFilters();
+  onSpinner(false);
 };
 
-const onUpdateQuery = () => {
+const onUpdateQuery = async () => {
   const query: ProductQuery = {};
 
   if (
-    filters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
-    filters.value.rangePrice.max !== defaultFilters.value.rangePrice.max
+    appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
+    appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max
   ) {
-    query.min_price = filters.value.rangePrice.min;
-    query.max_price = filters.value.rangePrice.max;
+    query.min_price = appliedFilters.value.rangePrice.min;
+    query.max_price = appliedFilters.value.rangePrice.max;
   }
 
-  if (filters.value.brand.length > 0) {
-    query.brand = filters.value.brand.join(',');
+  if (appliedFilters.value.brand.length > 0) {
+    query.brand = appliedFilters.value.brand.join(',');
   }
 
-  if (filters.value.page !== defaultFilters.value.page) {
-    query.page = filters.value.page;
+  if (appliedFilters.value.page !== defaultFilters.value.page) {
+    query.page = appliedFilters.value.page;
   }
 
-  if (filters.value.orderBy !== defaultFilters.value.orderBy) {
-    query.order_by = filters.value.orderBy;
+  if (appliedFilters.value.orderBy !== defaultFilters.value.orderBy) {
+    query.order_by = appliedFilters.value.orderBy;
   }
 
-  void router.replace({ query });
+  router.replace({ query });
 };
 
 const onSetFiltersFromQuery = (): void => {
   const { min_price, max_price, brand, page, orderBy } = route.query;
 
   if (min_price && max_price) {
-    filters.value.rangePrice = {
+    appliedFilters.value.rangePrice = {
       min: Number(min_price),
       max: Number(max_price),
     };
   }
 
   if (brand) {
-    filters.value.brand = String(brand).split(',');
+    appliedFilters.value.brand = String(brand).split(',');
   }
 
   if (page) {
-    filters.value.page = Number(page);
+    appliedFilters.value.page = Number(page);
   }
 
   if (orderBy) {
-    filters.value.orderBy = String(orderBy);
+    appliedFilters.value.orderBy = String(orderBy);
   }
 };
 
@@ -255,8 +306,20 @@ watch(
   () => catalogStore.productSearch,
   (newValue: ProductSearchResponse | null) => {
     if (newValue) {
-      console.log(newValue);
       products.value = newValue.products.content;
+      pageable.value = newValue.products.pageable;
+      totalElements.value = newValue.products.totalElements;
+      totalPages.value = newValue.products.totalPages;
+      availableFilters.value = newValue.filters;
+      // Asignar valores de filtros
+      defaultFilters.value.rangePrice.max = newValue.filters.maxPrice;
+      defaultFilters.value.rangePrice.min = newValue.filters.minPrice;
+
+      if (!appliedFiltersHasRangePriceBase.value) {
+        appliedFilters.value.rangePrice.max = newValue.filters.maxPrice;
+        appliedFilters.value.rangePrice.min = newValue.filters.minPrice;
+        appliedFiltersHasRangePriceBase.value = true;
+      }
     }
   },
 );

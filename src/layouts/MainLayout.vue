@@ -135,7 +135,7 @@
     </q-page-container>
 
     <q-card flat class="bg-black no-border-radius">
-      <q-card-section class="q-pa-lg bg-grey-3">
+      <q-card-section class="q-pa-lg " style="background-color: #f9f5ec;">
         <div class="row items-center">
           <div class="col" v-for="benefit in list.benefits" :key="benefit.title">
             <div class="row items-center justify-center">

@@ -61,18 +61,6 @@ const props = defineProps<{ images: string[] }>();
 
 const modules = ref([FreeMode, Navigation, Thumbs]);
 const thumbsSwiper = ref<SwiperType | null>(null);
-// const images = ref<string[]>([
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/1/-/1-anthelios-uvmune-dp-facial-800x800.jpg',
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/3/-/3-anthelios-uvmune-dp-facial_1.jpg',
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/4/-/4-anthelios-uvmune-dp-facial_1.jpg',
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/5/-/5-anthelios-uvmune-dp-facial_1.jpg',
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/6/-/6-anthelios-uvmune-dp-facial_1.jpg',
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/7/-/7-anthelios-uvmune-dp-facial_1.jpg',
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/8/-/8-anthelios-uvmune-dp-facial.jpg',
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/9/-/9-anthelios-uvmune-dp-facial-800x800.jpg',
-//   'https://dermotiendashopping.com/media/catalog/product/cache/ff278125aefc2253a344625f59d7baee/1/0/10-anthelios-uvmune-dp-posterior-facial-800x800.jpg',
-// ]);
-
 const localImages = ref<string[]>(props.images);
 
 const setThumbsSwiper = (swiper: SwiperType) => {

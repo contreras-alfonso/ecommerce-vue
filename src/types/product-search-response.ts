@@ -4,10 +4,10 @@ import type { Product } from "./product";
 
 export interface ProductSearchResponse {
     products: Products;
-    filters:  Filters;
+    filters:  AvailableFilters;
 }
 
-export interface Filters {
+export interface AvailableFilters {
     minPrice: number;
     maxPrice: number;
     brands:   BrandElement[];

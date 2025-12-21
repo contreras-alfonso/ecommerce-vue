@@ -5,22 +5,37 @@
     gutter="sm"
     size="md"
     outline
-    v-model="current"
-    :max="5"
+    v-model="localCurrentPage"
+    :max="localMaxPages"
   />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const emit = defineEmits(['onChangePage']);
 
-const props = defineProps<{ currentPage: number }>();
+const props = defineProps<{ currentPage: number; maxPages: number }>();
+
+const localCurrentPage = ref<number>(props.currentPage);
+const localMaxPages = ref<number>(props.maxPages);
 
 const onChangePage = (page: number) => {
   emit('onChangePage', page);
 };
 
-const current = ref(props.currentPage);
+watch(
+  () => props.currentPage,
+  (val: number) => {
+    localCurrentPage.value = val;
+  },
+);
+
+watch(
+  () => props.maxPages,
+  (val: number) => {
+    localMaxPages.value = val;
+  },
+);
 </script>
 <style lang="scss">
 .pagination .q-btn:before {

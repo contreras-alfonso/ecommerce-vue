@@ -6,12 +6,11 @@
       class="column product-card non-selectable cursor-pointer full-height"
     >
       <div class="col">
-        <q-card-section>
-          <q-img spinner-color="grey" :src="product.colorImages[0]?.url" />
+        <q-card-section >
+          <q-img style="height: 280px;" fit="contain" spinner-color="grey" :src="product.colorImages[0]?.url" />
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <!-- <div class="text-caption fs-14">{{ product?.brand }}</div> -->
           <q-badge class="q-px-md q-py-xs" rounded color="primary" :label="product.brand.name" />
 
           <div class="text-subtitle1 q-my-sm text-grey-10" style="line-height: 20px">
@@ -44,6 +43,7 @@ const router = useRouter();
 </script>
 <style lang="scss" scoped>
 .product-card {
+  min-height: 500px;
   border: 1px solid #f3f3f0;
 }
 

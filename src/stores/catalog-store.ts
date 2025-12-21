@@ -13,8 +13,8 @@ export const useCatalogStore = defineStore('color', {
   },
 
   actions: {
-    async fetchByFilters(term: string) {
-      const { data } = await api.get<ProductSearchResponse>(`/api/products/by/${term}`);
+    async fetchByFilters(term: string, query: string) {
+      const { data } = await api.get<ProductSearchResponse>(`/api/products/by/${term}?${query}`);
       this.productSearch = data;
     },
   },

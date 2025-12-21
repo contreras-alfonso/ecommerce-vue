@@ -20,6 +20,8 @@ export interface ColorImage {
   id: string;
   url: string;
   color: Color;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Variant {

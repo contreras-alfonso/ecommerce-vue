@@ -51,12 +51,13 @@ import { uid } from 'quasar';
 import CardProduct from './CardProduct.vue';
 import { ref } from 'vue';
 import type { Product } from 'src/types/product';
+import { productsData } from 'src/data/products';
 
 const swiperId = uid();
 
 const modules = [Navigation, Pagination, Scrollbar, A11y, FreeMode, Autoplay];
 
-const products = ref<Product[]>([]);
+const products = ref<Product[]>(productsData);
 </script>
 <style lang="scss" scoped>
 .swiper {
