@@ -49,8 +49,8 @@
                   text-color="white"
                   icon="search"
                 >
-                  Precio: S/ {{ appliedFilters.rangePrice.min }} - S/
-                  {{ appliedFilters.rangePrice.max }}
+                  Precio: S/ {{ toCurrency(appliedFilters.rangePrice.min) }} - S/
+                  {{ toCurrency(appliedFilters.rangePrice.max) }}
                 </q-chip>
               </div>
 
@@ -145,7 +145,7 @@ const catalogStore = useCatalogStore();
 const router = useRouter();
 const route = useRoute();
 // const { notifySuccess, notifyError } = useNotify();
-const { onSpinner } = useHelpers();
+const { onSpinner, toCurrency } = useHelpers();
 
 const categorySlug = ref<string | null>(null);
 

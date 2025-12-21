@@ -47,11 +47,19 @@ export function useHelpers() {
     return value.length < limit ? value : value.slice(0, limit) + '...';
   };
 
+  const toCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('es-PE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
   return {
     onSpinner,
     openUrl,
     formatAmount,
     handleApiError,
     truncate,
+    toCurrency,
   };
 }

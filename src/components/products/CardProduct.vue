@@ -21,7 +21,9 @@
           <div class="text-subtitle1 q-my-sm text-grey-10" style="line-height: 20px">
             {{ product.name }}
           </div>
-          <div class="text-h6 fw-500 fs-18 text-secondary">S/ {{ product.variants[0]?.price }}</div>
+          <div class="text-h6 fw-500 fs-18 text-secondary">
+            S/ {{ toCurrency(product.variants[0]?.price ?? 0) }}
+          </div>
         </q-card-section>
       </div>
 
@@ -40,10 +42,12 @@
 </template>
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { useHelpers } from 'src/composables/helpers';
 import type { Product } from 'src/types/product';
 
 defineProps<{ product: Product }>();
 
+const { toCurrency } = useHelpers();
 const router = useRouter();
 </script>
 <style lang="scss" scoped>

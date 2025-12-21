@@ -4,8 +4,8 @@
     <q-separator spaced></q-separator>
     <div class="text-uppercase">
       Precio:
-      <span class="text-secondary">S/ {{ localBaseMinPrice }}</span>
-      <span class="text-secondary"> - S/ {{ localBaseMaxPrice }}</span>
+      <span class="text-secondary">S/ {{ toCurrency(localBaseMinPrice) }}</span>
+      <span class="text-secondary"> - S/ {{ toCurrency(localBaseMaxPrice) }}</span>
     </div>
     <template v-if="totalElements > 1">
       <q-range
@@ -48,9 +48,10 @@
   </div>
 </template>
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import type { PriceRange } from 'src/types/price-range';
 import type { BrandElement } from 'src/types/product-search-response';
-import { ref, watch } from 'vue';
+import { useHelpers } from 'src/composables/helpers';
 
 const emit = defineEmits(['onChangeRangePrice', 'onChangeBrand']);
 
@@ -62,6 +63,8 @@ const props = defineProps<{
   baseMinPrice: number;
   totalElements: number;
 }>();
+
+const { toCurrency } = useHelpers();
 
 const localBaseMinPrice = ref(props.baseMinPrice);
 const localBaseMaxPrice = ref(props.baseMaxPrice);

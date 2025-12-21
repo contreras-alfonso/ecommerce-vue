@@ -45,7 +45,7 @@
 
           <div class="row items-center justify-between q-py-md">
             <div class="text-weight-bold text-subtitle1">Subtotal</div>
-            <div class="text-h6 text-secondary">S/ 562.50</div>
+            <div class="text-h6 text-secondary">S/ {{ toCurrency(562.5) }}</div>
           </div>
 
           <q-btn
@@ -66,7 +66,9 @@ import { uid } from 'quasar';
 import { useMainStore } from 'src/stores/main-store';
 import CartProductCard from './CartProductCard.vue';
 import type { ProductCart } from 'src/types/product-cart';
+import { useHelpers } from 'src/composables/helpers';
 
+const { toCurrency } = useHelpers();
 const mainStore = useMainStore();
 const products = ref<ProductCart[]>([
   {
