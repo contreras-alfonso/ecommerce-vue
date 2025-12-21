@@ -6,8 +6,13 @@
       class="column product-card non-selectable cursor-pointer full-height"
     >
       <div class="col">
-        <q-card-section >
-          <q-img style="height: 280px;" fit="contain" spinner-color="grey" :src="product.colorImages[0]?.url" />
+        <q-card-section>
+          <q-img
+            style="height: 280px"
+            fit="contain"
+            spinner-color="grey"
+            :src="product.colorImages[0]?.url"
+          />
         </q-card-section>
 
         <q-card-section class="q-pt-none">

@@ -3,13 +3,16 @@
     <div class="row items-center justify-center">
       <div class="col-md-10 col-12 q-gutter-y-md">
         <div>
-          <BreadCrum title="Celulares" />
+          <BreadCrum :title="categoryStore.getNameBySlug(categorySlug ?? '') ?? 'No disponible'" />
         </div>
 
         <div class="row q-col-gutter-x-xl">
           <div class="col-2">
-            <div class="text-h5 text-weight-bold">Celulares</div>
+            <div class="text-h5 text-weight-bold text-capitalize">
+              {{ categoryStore.getNameBySlug(categorySlug ?? '') ?? 'No disponible' }}
+            </div>
             <ProductFilter
+              v-if="products.length > 0"
               :available-brands="availableFilters?.brands ?? []"
               :selected-brand="appliedFilters.brand"
               :range-price="appliedFilters.rangePrice"
@@ -21,15 +24,25 @@
             />
           </div>
 
-          <div class="col-10">
+          <div v-if="products.length <= 0" class="col-10">
             <div
-              v-if="showRangePriceChip || appliedFilters.brand"
+              style="border-left: 3px solid #03a9f4"
+              class="bg-light-blue-2 q-py-sm q-px-sm text-caption"
+            >
+              <q-icon name="dangerous" size="sm" color="light-blue-6"></q-icon>
+              <span class="q-ml-sm">No hay productos disponibles según tu selección actual.</span>
+            </div>
+          </div>
+
+          <div v-else class="col-10">
+            <div
+              v-if="(hasChangedRangePrice && hasTouchedFilters.rangePrice) || appliedFilters.brand"
               class="row items-center q-col-gutter-x-sm"
             >
               <div class="bg-grey-3 q-py-sm q-px-md">Filtrando por:</div>
               <div>
                 <q-chip
-                  v-if="showRangePriceChip"
+                  v-if="hasChangedRangePrice && hasTouchedFilters.rangePrice"
                   removable
                   @remove="onRemoveFilterRangePrice"
                   color="light-blue-6"
@@ -45,7 +58,7 @@
                 <q-chip
                   v-if="appliedFilters.brand"
                   removable
-                  @remove="onChangeBrand('')"
+                  @remove="onChangeBrand('', false)"
                   color="light-blue-6"
                   text-color="white"
                   icon="search"
@@ -93,7 +106,7 @@
           </div>
         </div>
 
-        <div class="flex flex-center q-py-md">
+        <div v-if="products.length > 0" class="flex flex-center q-py-md">
           <Pagination
             :current-page="appliedFilters.page"
             :max-pages="totalPages"
@@ -115,7 +128,7 @@ import ProductFilter from 'src/components/products/ProductFilter.vue';
 import type { SelectOption } from 'src/types/select-option';
 import type { Product } from 'src/types/product';
 import type { PriceRange } from 'src/types/price-range';
-import { useNotify } from 'src/composables/notify';
+// import { useNotify } from 'src/composables/notify';
 import { useHelpers } from 'src/composables/helpers';
 import Pagination from 'src/components/shared/Pagination.vue';
 import type { Filters } from 'src/types/filters';
@@ -126,16 +139,23 @@ import type {
   ProductSearchResponse,
 } from 'src/types/product-search-response';
 import { useCatalogStore } from 'src/stores/catalog-store';
-
+import { useCategoryStore } from 'src/stores/category-store';
+const categoryStore = useCategoryStore();
 const catalogStore = useCatalogStore();
 const router = useRouter();
 const route = useRoute();
-const { notifySuccess, notifyError } = useNotify();
+// const { notifySuccess, notifyError } = useNotify();
 const { onSpinner } = useHelpers();
 
 const categorySlug = ref<string | null>(null);
 
 const filtersHasRangePrice = ref(false);
+
+const hasTouchedFilters = ref({
+  orderBy: false,
+  rangePrice: false,
+  brand: false,
+});
 
 const appliedFilters = ref<Filters>({
   orderBy: 'created_asc',
@@ -192,7 +212,7 @@ const options = ref<{ orderBy: SelectOption[]; brand: SelectOption[] }>({
   ],
 });
 
-const showRangePriceChip = computed(() => {
+const hasChangedRangePrice = computed(() => {
   return (
     appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
     appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max
@@ -211,8 +231,9 @@ const queryToSend = computed((): string => {
     query += `&sort=${orderBy}`;
   }
   if (
-    appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
-    appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max
+    (appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
+      appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max) &&
+    hasTouchedFilters.value.rangePrice
   ) {
     query += `&minPrice=${rangePrice.min}&maxPrice=${rangePrice.max}`;
   }
@@ -230,13 +251,14 @@ onMounted(async () => {
   await onLoad();
 });
 
-const onRemoveFilterRangePrice = () => {
-  filtersHasRangePrice.value = false;
+const onRemoveFilterRangePrice = async () => {
+  //new
+  hasTouchedFilters.value.rangePrice = false;
   const rangePrice: PriceRange = {
     min: defaultFilters.value.rangePrice.min,
     max: defaultFilters.value.rangePrice.max,
   };
-  onChangeRangePrice(rangePrice);
+  await onChangeRangePrice(rangePrice, false);
 };
 
 const onSetCategorySlug = () => {
@@ -270,18 +292,22 @@ const onChangePage = async (page: number): Promise<void> => {
   await refreshCatalog();
 };
 
-const onChangeRangePrice = async (range: PriceRange): Promise<void> => {
+const onChangeRangePrice = async (range: PriceRange, touched: boolean = true): Promise<void> => {
+  // new
+  hasTouchedFilters.value.rangePrice = touched;
   appliedFilters.value.rangePrice = range;
   await refreshCatalog();
 };
 
-const onChangeBrand = async (brand: string): Promise<void> => {
+const onChangeBrand = async (brand: string, touched: boolean = true): Promise<void> => {
+  // new
+  hasTouchedFilters.value.brand = touched;
   appliedFilters.value.brand = brand;
   await refreshCatalog();
 };
 
 const refreshCatalog = async () => {
-  onUpdateQuery();
+  await onUpdateQuery();
   onSpinner(true);
   await fetchCatalogByFilters();
   onSpinner(false);
@@ -290,9 +316,11 @@ const refreshCatalog = async () => {
 const onUpdateQuery = async () => {
   const query: ProductQuery = {};
   if (
-    appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
-    appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max
+    (appliedFilters.value.rangePrice.min !== defaultFilters.value.rangePrice.min ||
+      appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max) &&
+    hasTouchedFilters.value.rangePrice
   ) {
+    console.log(appliedFilters.value.rangePrice);
     query.min_price = appliedFilters.value.rangePrice.min;
     query.max_price = appliedFilters.value.rangePrice.max;
   }
@@ -309,7 +337,7 @@ const onUpdateQuery = async () => {
     query.order_by = appliedFilters.value.orderBy;
   }
 
-  router.replace({ query });
+  await router.replace({ query });
 };
 
 const onSetFiltersFromQuery = (): void => {
@@ -321,6 +349,7 @@ const onSetFiltersFromQuery = (): void => {
       max: Number(max_price),
     };
     filtersHasRangePrice.value = true;
+    hasTouchedFilters.value.rangePrice = true;
     console.log(appliedFilters.value.rangePrice);
   }
 
@@ -337,6 +366,28 @@ const onSetFiltersFromQuery = (): void => {
   }
 };
 
+const onClearFilters = () => {
+  appliedFilters.value = {
+    orderBy: 'created_asc',
+    rangePrice: {
+      min: 0,
+      max: 0,
+    },
+    brand: '',
+    page: 1,
+  };
+
+  defaultFilters.value = {
+    orderBy: 'created_asc',
+    rangePrice: {
+      min: 0,
+      max: 0,
+    },
+    brand: '',
+    page: 1,
+  };
+};
+
 watch(
   () => catalogStore.productSearch,
   (newValue: ProductSearchResponse | null) => {
@@ -349,13 +400,30 @@ watch(
       // Asignar valores de filtros
 
       if (!filtersHasRangePrice.value) {
-        defaultFilters.value.rangePrice.max = newValue.filters.maxPrice;
-        defaultFilters.value.rangePrice.min = newValue.filters.minPrice;
         appliedFilters.value.rangePrice.max = newValue.filters.maxPrice;
         appliedFilters.value.rangePrice.min = newValue.filters.minPrice;
+        defaultFilters.value.rangePrice.max = newValue.filters.maxPrice;
+        defaultFilters.value.rangePrice.min = newValue.filters.minPrice;
         filtersHasRangePrice.value = true;
+      } else {
+        console.log(hasTouchedFilters.value.rangePrice);
+        if (!hasTouchedFilters.value.rangePrice) {
+          appliedFilters.value.rangePrice.max = newValue.filters.maxPrice;
+          appliedFilters.value.rangePrice.min = newValue.filters.minPrice;
+        }
       }
     }
+  },
+);
+
+watch(
+  () => route.params.categorySlug,
+  async () => {
+    filtersHasRangePrice.value = false;
+    onClearFilters();
+    onSetCategorySlug();
+    onSetFiltersFromQuery();
+    await onLoad();
   },
 );
 </script>

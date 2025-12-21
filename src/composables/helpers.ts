@@ -43,10 +43,15 @@ export function useHelpers() {
     }
   };
 
+  const truncate = (value: string, limit: number): string => {
+    return value.length < limit ? value : value.slice(0, limit) + '...';
+  };
+
   return {
     onSpinner,
     openUrl,
     formatAmount,
     handleApiError,
+    truncate,
   };
 }

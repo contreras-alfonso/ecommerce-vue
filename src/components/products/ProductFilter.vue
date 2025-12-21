@@ -5,7 +5,7 @@
     <div class="text-uppercase">
       Precio:
       <span class="text-secondary">S/ {{ localBaseMinPrice }}</span>
-      <span class="text-secondary" v-if="totalElements > 1"> - S/ {{ localBaseMaxPrice }}</span>
+      <span class="text-secondary"> - S/ {{ localBaseMaxPrice }}</span>
     </div>
     <template v-if="totalElements > 1">
       <q-range

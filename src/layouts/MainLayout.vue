@@ -18,7 +18,7 @@
             <div class="row justify-center q-col-gutter-x-sm">
               <template v-if="loading.categories">
                 <div v-for="i in 4" :key="i">
-                  <q-skeleton class="bg-grey-3" width="100px" height="30px" type="QChip" />
+                  <q-skeleton class="bg-grey-3" width="100px" height="40px" type="QChip" />
                 </div>
               </template>
 
