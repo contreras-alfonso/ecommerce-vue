@@ -83,7 +83,7 @@ const slides = [
   },
 ];
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .main-slider {
   width: 100%;
   height: 700px;

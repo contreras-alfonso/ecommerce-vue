@@ -6,6 +6,7 @@ import type { ProductState } from 'src/types/store/product-state';
 export const useProductStore = defineStore('product', {
   state: (): ProductState => ({
     products: [],
+    product: null,
   }),
 
   getters: {
@@ -22,6 +23,7 @@ export const useProductStore = defineStore('product', {
 
     async fetchById(id: string) {
       const { data } = await api.get<Product>(`/api/products/${id}`);
+      this.product = data;
       return data;
     },
 
