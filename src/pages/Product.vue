@@ -1,5 +1,10 @@
 <template>
-  <q-page class="q-py-xl q-px-md">
+  <q-page v-if="loading.product" class="column">
+    <div class="col column items-center justify-center">
+      <q-spinner class="q-ml-sm" size="lg" color="primary" />
+    </div>
+  </q-page>
+  <q-page v-else class="q-py-xl q-px-md">
     <div class="row items-center justify-center">
       <div class="col-md-10 col-12 q-gutter-y-md">
         <div>
@@ -51,7 +56,7 @@ const productSlug = ref<string | null>(null);
 const product = ref<Product | null>(null);
 const productStore = useProductStore();
 const loading = ref({
-  product: false,
+  product: true,
 });
 
 onMounted(async () => {
@@ -61,7 +66,7 @@ onMounted(async () => {
 
 const onLoad = async () => {
   loading.value.product = true;
-  await Promise.all([fetchCategories()])
+  await Promise.all([fetchProductById()])
     .then(() => {})
     .finally(() => {
       loading.value.product = false;
@@ -79,13 +84,13 @@ const onSetProductSlug = () => {
   }
 };
 
-const fetchCategories = async () => {
+const fetchProductById = async () => {
   await productStore.fetchById(productSlug.value!);
 };
 
 watch(
-  () => productStore.product!,
-  (val: Product) => {
+  () => productStore.product,
+  (val: Product | null) => {
     if (val) {
       product.value = val;
     }

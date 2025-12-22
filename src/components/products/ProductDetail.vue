@@ -222,8 +222,8 @@ const benefits = ref<Benefit[]>([
 ]);
 
 watch(
-  () => props.product!,
-  (val: Product) => {
+  () => props.product,
+  (val: Product | null) => {
     if (val) {
       localProduct.value = val;
     }
@@ -238,6 +238,7 @@ watch(
     const first = product.variants[0];
     selectedVariantKey.value = `${first?.ram}-${first?.storage}`;
   },
+  { immediate: true },
 );
 
 watch(
@@ -249,6 +250,7 @@ watch(
     }
     selectedColorId.value = variants[0]?.color?.id ?? '';
   },
+  { immediate: true },
 );
 
 watch(
@@ -256,6 +258,7 @@ watch(
   (val) => {
     emit('onSelectVariant', val);
   },
+  { immediate: true },
 );
 </script>
 
