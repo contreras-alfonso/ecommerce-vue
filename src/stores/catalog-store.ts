@@ -3,7 +3,7 @@ import { api } from 'boot/axios';
 import type { ProductSearchResponse } from 'src/types/product-search-response';
 import type { CatalogState } from 'src/types/store/catalog-state';
 
-export const useCatalogStore = defineStore('color', {
+export const useCatalogStore = defineStore('catalog', {
   state: (): CatalogState => ({
     productSearch: null,
     baseBrands: [],
