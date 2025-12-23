@@ -9,7 +9,7 @@ export function useNotify() {
       color: 'positive',
       icon: 'check_circle',
       progress: false,
-      position: 'bottom-right',
+      position: 'top',
       actions: [{ icon: 'close', color: 'white', size: 'xs', round: true }],
     });
   };
@@ -20,7 +20,7 @@ export function useNotify() {
       color: 'negative',
       icon: 'error',
       progress: false,
-      position: 'bottom-right',
+      position: 'top',
       actions: [{ icon: 'close', color: 'white', size: 'sm', round: true }],
     });
   };
@@ -32,7 +32,7 @@ export function useNotify() {
       icon,
       timeout: 2000,
       progress: false,
-      position: 'bottom-right',
+      position: 'top',
       actions: [{ icon: 'close', color: 'white', size: 'xs', round: true }],
     });
   };

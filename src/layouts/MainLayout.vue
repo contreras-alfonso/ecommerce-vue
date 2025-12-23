@@ -18,7 +18,12 @@
             <div class="row justify-center q-col-gutter-x-sm">
               <template v-if="loading.categories">
                 <div v-for="i in 4" :key="i">
-                  <q-skeleton class="bg-grey-3" width="100px" height="40px" type="QChip" />
+                  <q-skeleton
+                    class="bg-grey-3 custom-skeleton-border"
+                    width="100px"
+                    height="35px"
+                    type="QBtn"
+                  />
                 </div>
               </template>
 
@@ -135,7 +140,7 @@
     </q-page-container>
 
     <q-card flat class="bg-black no-border-radius">
-      <q-card-section class="q-pa-lg " style="background-color: #f9f5ec;">
+      <q-card-section class="q-pa-lg" style="background-color: #f9f5ec">
         <div class="row items-center">
           <div class="col" v-for="benefit in list.benefits" :key="benefit.title">
             <div class="row items-center justify-center">
@@ -305,4 +310,8 @@ watch(
 );
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.custom-skeleton-border {
+  border-radius: 80px;
+}
+</style>

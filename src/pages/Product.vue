@@ -1,8 +1,6 @@
 <template>
-  <q-page v-if="loading.product" class="column">
-    <div class="col column items-center justify-center">
-      <q-spinner class="q-ml-sm" size="lg" color="primary" />
-    </div>
+  <q-page class="q-py-xl q-px-md" v-if="loading.product">
+    <ProductDetailSkeleton />
   </q-page>
   <q-page v-else class="q-py-xl q-px-md">
     <div class="row items-center justify-center">
@@ -39,6 +37,7 @@ import ProductCharacteristics from 'src/components/products/ProductCharacteristi
 import ProductDetail from 'src/components/products/ProductDetail.vue';
 import ProductImagesSlider from 'src/components/products/ProductImagesSlider.vue';
 import BreadCrum from 'src/components/shared/BreadCrum.vue';
+import ProductDetailSkeleton from 'src/components/products/ProductDetailSkeleton.vue';
 import { useProductStore } from 'src/stores/product-store';
 import type { Product, Variant } from 'src/types/product';
 
@@ -56,7 +55,7 @@ const productSlug = ref<string | null>(null);
 const product = ref<Product | null>(null);
 const productStore = useProductStore();
 const loading = ref({
-  product: true,
+  product: false,
 });
 
 onMounted(async () => {
