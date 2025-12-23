@@ -14,8 +14,10 @@
           <div class="row items-center justify-between">
             <div class="col text-h5 text-weight-bold">
               Mi carrito
-              <span class="text-weight-regular">({{ cartStore.getCart?.itemsCount }})</span>
-              <q-spinner class="q-ml-sm" color="primary" />
+              <span v-if="cartStore.getCart" class="text-weight-regular"
+                >({{ cartStore.getCart?.itemsCount }})</span
+              >
+              <!-- <q-spinner class="q-ml-sm" color="primary" /> -->
             </div>
             <q-btn @click="onClose" icon="close" color="grey-6" size="md" round flat />
           </div>
@@ -25,7 +27,7 @@
 
         <q-scroll-area class="col">
           <q-card-section class="q-mt-md q-pa-none">
-            <template v-if="items.length > 0">
+            <template v-if="cartStore.getCart">
               <div class="row q-col-gutter-y-sm">
                 <div class="col-12" v-for="item in items" :key="item.variantId">
                   <CartProductCard :item="item" />
@@ -34,14 +36,14 @@
             </template>
             <template v-else>
               <div class="column items-center justify-center">
-                <q-img src="/svg/empty-cart.svg" width="400px" />
+                <q-img spinner-color="grey" src="/svg/empty-cart.svg" width="400px" />
                 <div class="q-mt-md">No hay artículos en tu carrito de compras</div>
               </div>
             </template>
           </q-card-section>
         </q-scroll-area>
 
-        <q-card-section class="q-px-none q-pb-none">
+        <q-card-section v-if="cartStore.getCart" class="q-px-none q-pb-none">
           <q-separator />
 
           <div class="row items-center justify-between q-py-md">

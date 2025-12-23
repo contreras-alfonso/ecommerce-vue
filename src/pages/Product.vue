@@ -17,7 +17,11 @@
           <div class="col-6">
             <div class="row items-center justify-center">
               <div class="col-md-10 col-lg-9 col-12 q-col-gutter-y-md">
-                <ProductDetail :product="product" @on-select-variant="onSelectVariant" />
+                <ProductDetail
+                  :product="product"
+                  @on-select-variant="onSelectVariant"
+                  @on-add-product-to-cart="onAddProductToCart"
+                />
               </div>
             </div>
           </div>
@@ -39,23 +43,34 @@ import ProductImagesSlider from 'src/components/products/ProductImagesSlider.vue
 import BreadCrum from 'src/components/shared/BreadCrum.vue';
 import ProductDetailSkeleton from 'src/components/products/ProductDetailSkeleton.vue';
 import { useProductStore } from 'src/stores/product-store';
+import { useCartStore } from 'src/stores/cart-store';
+import { useMainStore } from 'src/stores/main-store';
 import type { Product, Variant } from 'src/types/product';
+import type { VerifyStockAndUpdateRequest } from 'src/types/verify-stock-update-request';
+import { StockUpdateMode } from 'src/types/stock-update-mode';
+import { useHelpers } from 'src/composables/helpers';
+import { useNotify } from 'src/composables/notify';
 
+const { onSpinner, handleApiError } = useHelpers();
+const { notifySuccess } = useNotify();
 const route = useRoute();
 const selectedVariant = ref<Variant | null>(null);
+
+const mainStore = useMainStore();
+const cartStore = useCartStore();
+const productStore = useProductStore();
+
+const productSlug = ref<string | null>(null);
+const product = ref<Product | null>(null);
+const loading = ref({
+  product: false,
+});
 
 const getImagesBySelectedVariant = computed(() => {
   const findImages = product.value?.colorImages
     .filter((colorImage) => colorImage.color.id === selectedVariant.value?.color.id)
     .map((colorImage) => colorImage.url);
   return findImages;
-});
-
-const productSlug = ref<string | null>(null);
-const product = ref<Product | null>(null);
-const productStore = useProductStore();
-const loading = ref({
-  product: false,
 });
 
 onMounted(async () => {
@@ -70,6 +85,26 @@ const onLoad = async () => {
     .finally(() => {
       loading.value.product = false;
     });
+};
+
+const onAddProductToCart = async (quantity: number) => {
+  const payload: VerifyStockAndUpdateRequest = {
+    mode: StockUpdateMode.ADD,
+    cartId: cartStore.getCart?.cartId ?? '',
+    variantId: selectedVariant.value!.id,
+    quantity,
+  };
+
+  onSpinner(true);
+  try {
+    await cartStore.verifyStockAndUpdateCart(payload);
+    notifySuccess('El producto fue agregado al carrito');
+    mainStore.cartDrawer = true;
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
+  }
 };
 
 const onSelectVariant = (value: Variant | null) => {

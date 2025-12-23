@@ -1,5 +1,7 @@
+import type { StockUpdateMode } from './stock-update-mode';
+
 export interface VerifyStockAndUpdateRequest {
-  mode: string;
+  mode: StockUpdateMode;
   cartId: string;
   variantId: string;
   quantity: number;

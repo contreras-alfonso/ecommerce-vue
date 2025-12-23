@@ -54,7 +54,16 @@
     <div class="col-grow">
       <div class="row items-start q-col-gutter-x-sm">
         <div class="text-subtitle1 text-secondary">S/ {{ toCurrency(item.price) }}</div>
-        <div><q-btn round size="sm" icon="close" color="grey-6" flat></q-btn></div>
+        <div>
+          <q-btn
+            @click="onRemoveItemFromCart(localItem.variantId)"
+            round
+            size="sm"
+            icon="close"
+            color="grey-6"
+            flat
+          ></q-btn>
+        </div>
       </div>
     </div>
   </div>
@@ -65,14 +74,36 @@
 import { ref, watch } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
 import { useHelpers } from 'src/composables/helpers';
+import { useCartStore } from 'src/stores/cart-store';
+import { useNotify } from 'src/composables/notify';
 import type { Item } from 'src/types/cart-response';
+import type { RemoveItemFromCartRequest } from 'src/types/remove-item-cart-request';
 
 const props = defineProps<{
   item: Item;
 }>();
 
-const { toCurrency } = useHelpers();
+const cartStore = useCartStore();
+const { toCurrency, onSpinner, handleApiError } = useHelpers();
+const { notifySuccess } = useNotify();
 const localItem = ref<Item>(props.item);
+
+const onRemoveItemFromCart = async (variantId: string) => {
+  const payload: RemoveItemFromCartRequest = {
+    cartId: cartStore.getCart?.cartId ?? '',
+    variantId: variantId,
+  };
+
+  onSpinner(true);
+  try {
+    await cartStore.removeItemFromCart(payload);
+    notifySuccess('El producto fue eliminado del carrito');
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
+  }
+};
 
 watch(
   () => props.item,

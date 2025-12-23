@@ -4,6 +4,7 @@ import type { CartState } from 'src/types/store/cart-state';
 import type { CartResponse } from 'src/types/cart-response';
 import type { RemoveItemFromCartRequest } from 'src/types/remove-item-cart-request';
 import type { VerifyStockAndUpdateRequest } from 'src/types/verify-stock-update-request';
+import { CartStatus } from 'src/types/cart-status';
 
 export const useCartStore = defineStore('cart', {
   state: (): CartState => ({
@@ -22,6 +23,9 @@ export const useCartStore = defineStore('cart', {
 
     async removeItemFromCart(payload: RemoveItemFromCartRequest) {
       const { data } = await api.post<CartResponse>(`/api/cart/remove`, payload);
+      if (data.status === CartStatus.ABANDONED) {
+        return (this.cart = null);
+      }
       this.cart = data;
     },
 

@@ -99,7 +99,7 @@
     </div>
     <div class="col">
       <q-btn
-        @click="console.log(selectedVariant)"
+        @click="onAddProductToCart"
         class="full-width bg-primary text-white text-weight-regular q-py-md"
         flat
         color="primary"
@@ -135,7 +135,7 @@ import type { Product, Variant } from 'src/types/product';
 import { useHelpers } from 'src/composables/helpers';
 import type { Color } from 'src/types/color';
 
-const emit = defineEmits(['onSelectVariant']);
+const emit = defineEmits(['onSelectVariant', 'onAddProductToCart']);
 const props = defineProps<{ product: Product | null }>();
 
 const { toCurrency } = useHelpers();
@@ -220,6 +220,10 @@ const benefits = ref<Benefit[]>([
     title: 'Envíos rápidos y seguros.',
   },
 ]);
+
+const onAddProductToCart = () => {
+  emit('onAddProductToCart', quantity.value);
+};
 
 watch(
   () => props.product,
