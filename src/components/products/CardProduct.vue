@@ -67,7 +67,7 @@
       <div>
         <q-card-section class="q-pb-md">
           <q-btn
-            @click.stop="console.log('agregado')"
+            @click.stop="onAddProductToCart"
             flat
             class="text-weight-regular q-py-md btn-product full-width"
             label="Agregar al carrito"
@@ -78,15 +78,25 @@
   </div>
 </template>
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useHelpers } from 'src/composables/helpers';
+import { useStorage } from 'src/composables/storage';
+import { useNotify } from 'src/composables/notify';
+import { useCartStore } from 'src/stores/cart-store';
+import { useMainStore } from 'src/stores/main-store';
 import type { Product } from 'src/types/product';
-import { computed, ref } from 'vue';
+import type { VerifyStockAndUpdateRequest } from 'src/types/verify-stock-update-request';
+import { StockUpdateMode } from 'src/types/stock-update-mode';
 
 const props = defineProps<{ product: Product }>();
 
-const { toCurrency } = useHelpers();
-console.log(props.product.variants);
+const mainStore = useMainStore();
+const cartStore = useCartStore();
+const { toCurrency, onSpinner, handleApiError } = useHelpers();
+const { getStorage } = useStorage();
+const { notifySuccess } = useNotify();
+
 const router = useRouter();
 const activeIndex = ref(0);
 const variantsLength = ref(props.product.variants.length);
@@ -116,6 +126,32 @@ const disablePreviusVariant = computed(() => {
 const disableNextVariant = computed(() => {
   return activeIndex.value === variantsLength.value - 1;
 });
+
+const onAddProductToCart = async () => {
+  const payload: VerifyStockAndUpdateRequest = {
+    mode: StockUpdateMode.ADD,
+    cartId: '',
+    variantId: props.product.variants[activeIndex.value]!.id,
+    quantity: 1,
+  };
+
+  const cartId = getStorage('cartId');
+
+  if (typeof cartId === 'string') {
+    payload.cartId = cartId;
+  }
+
+  onSpinner(true);
+  try {
+    await cartStore.verifyStockAndUpdateCart(payload);
+    notifySuccess('El producto fue agregado al carrito');
+    mainStore.cartDrawer = true;
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
+  }
+};
 
 const onReduceActiveIndex = () => {
   if (activeIndex.value > 0) {

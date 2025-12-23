@@ -5,31 +5,44 @@
   <q-page v-else class="q-py-xl q-px-md">
     <div class="row items-center justify-center">
       <div class="col-md-10 col-12 q-gutter-y-md">
-        <div>
-          <BreadCrum :title="product?.name ?? ''" />
-        </div>
-
-        <div class="row q-col-gutter-x-xl">
-          <div class="col-6">
-            <product-images-slider :images="getImagesBySelectedVariant ?? []" />
+        <template v-if="product?.id">
+          <div>
+            <BreadCrum :title="product?.name ?? ''" />
           </div>
 
-          <div class="col-6">
-            <div class="row items-center justify-center">
-              <div class="col-md-10 col-lg-9 col-12 q-col-gutter-y-md">
-                <ProductDetail
-                  :product="product"
-                  @on-select-variant="onSelectVariant"
-                  @on-add-product-to-cart="onAddProductToCart"
-                />
+          <div class="row q-col-gutter-x-xl">
+            <div class="col-6">
+              <product-images-slider :images="getImagesBySelectedVariant ?? []" />
+            </div>
+
+            <div class="col-6">
+              <div class="row items-center justify-center">
+                <div class="col-md-10 col-lg-9 col-12 q-col-gutter-y-md">
+                  <ProductDetail
+                    :product="product"
+                    @on-select-variant="onSelectVariant"
+                    @on-add-product-to-cart="onAddProductToCart"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="q-mt-xl">
-          <ProductCharacteristics :characteristics="product?.description ?? ''" />
-        </div>
+          <div class="q-mt-xl">
+            <ProductCharacteristics :characteristics="product?.description ?? ''" />
+          </div>
+        </template>
+        <template v-else>
+          <div class="col-md-10 col-12 q-gutter-y-md">
+            <div
+              style="border-left: 3px solid #03a9f4"
+              class="bg-light-blue-2 q-py-sm q-px-sm text-caption"
+            >
+              <q-icon name="dangerous" size="sm" color="light-blue-6"></q-icon>
+              <span class="q-ml-sm">No pudimos encontrar el producto que buscas.</span>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </q-page>
@@ -45,12 +58,14 @@ import ProductDetailSkeleton from 'src/components/products/ProductDetailSkeleton
 import { useProductStore } from 'src/stores/product-store';
 import { useCartStore } from 'src/stores/cart-store';
 import { useMainStore } from 'src/stores/main-store';
+import { useStorage } from 'src/composables/storage';
 import type { Product, Variant } from 'src/types/product';
 import type { VerifyStockAndUpdateRequest } from 'src/types/verify-stock-update-request';
 import { StockUpdateMode } from 'src/types/stock-update-mode';
 import { useHelpers } from 'src/composables/helpers';
 import { useNotify } from 'src/composables/notify';
 
+const { getStorage } = useStorage();
 const { onSpinner, handleApiError } = useHelpers();
 const { notifySuccess } = useNotify();
 const route = useRoute();
@@ -90,10 +105,16 @@ const onLoad = async () => {
 const onAddProductToCart = async (quantity: number) => {
   const payload: VerifyStockAndUpdateRequest = {
     mode: StockUpdateMode.ADD,
-    cartId: cartStore.getCart?.cartId ?? '',
+    cartId: '',
     variantId: selectedVariant.value!.id,
     quantity,
   };
+
+  const cartId = getStorage('cartId');
+
+  if (typeof cartId === 'string') {
+    payload.cartId = cartId;
+  }
 
   onSpinner(true);
   try {
@@ -122,12 +143,26 @@ const fetchProductById = async () => {
   await productStore.fetchById(productSlug.value!);
 };
 
+const onClearData = () => {
+  product.value = null;
+  selectedVariant.value = null;
+};
+
 watch(
   () => productStore.product,
   (val: Product | null) => {
     if (val) {
       product.value = val;
     }
+  },
+);
+
+watch(
+  () => route.params.productSlug,
+  async () => {
+    onClearData();
+    onSetProductSlug();
+    await onLoad();
   },
 );
 </script>

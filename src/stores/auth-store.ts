@@ -1,6 +1,8 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { LocalStorage, SessionStorage } from 'quasar';
 import { api } from 'boot/axios';
+import { Notify } from 'quasar';
+import { useStorage } from 'src/composables/storage';
 import type { LoginRequest } from 'src/types/login-request';
 import type { AuthResponse } from 'src/types/auth-response';
 import type { AuthState } from 'src/types/store/auth-state';
@@ -9,6 +11,8 @@ import type { RegisterResponse } from 'src/types/register-response';
 
 const USER_TYPE = ['ADMIN', 'USER'];
 const AUTH_TYPE = 'Bearer';
+
+const { setStorage, getStorage } = useStorage();
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -45,20 +49,25 @@ export const useAuthStore = defineStore('auth', {
 
         this.role = profile.user.roles[0]!;
         this.authenticated = true;
-        this.setStorage('token', profile.token);
-        this.setStorage('user', profile.user);
+        setStorage('token', profile.token);
+        setStorage('user', profile.user);
         this.setUser(payload);
       } else {
         this.clear();
-        alert('Hola, no cuentas con privilegios para acceder a la aplicación.');
+        Notify.create({
+          message: 'Hola, no cuentas con privilegios para acceder a la aplicación.',
+          color: 'negative',
+          icon: 'error',
+          position: 'top',
+        });
       }
     },
 
     async verify() {
-      const token = this.getStorage('token');
+      const token = getStorage('token');
 
       if (token && typeof token === 'string') {
-        this.setStorage('token', token);
+        setStorage('token', token);
         api.defaults.headers.common.Authorization = `${AUTH_TYPE} ${token}`;
 
         try {
@@ -82,26 +91,26 @@ export const useAuthStore = defineStore('auth', {
       this.clear();
     },
 
-    getStorage(key: string) {
-      if (LocalStorage.has(key)) {
-        return LocalStorage.getItem(key);
-      } else if (SessionStorage.has(key)) {
-        return SessionStorage.getItem(key);
-      }
-      return null;
-    },
+    // getStorage(key: string) {
+    //   if (LocalStorage.has(key)) {
+    //     return LocalStorage.getItem(key);
+    //   } else if (SessionStorage.has(key)) {
+    //     return SessionStorage.getItem(key);
+    //   }
+    //   return null;
+    // },
 
-    setStorage<T>(key: string, value: T | null) {
-      if (value === null) {
-        if (LocalStorage.has(key)) {
-          LocalStorage.remove(key);
-        } else if (SessionStorage.has(key)) {
-          SessionStorage.remove(key);
-        }
-      } else {
-        LocalStorage.set(key, value);
-      }
-    },
+    // setStorage<T>(key: string, value: T | null) {
+    //   if (value === null) {
+    //     if (LocalStorage.has(key)) {
+    //       LocalStorage.remove(key);
+    //     } else if (SessionStorage.has(key)) {
+    //       SessionStorage.remove(key);
+    //     }
+    //   } else {
+    //     LocalStorage.set(key, value);
+    //   }
+    // },
 
     setUser(data: AuthResponse) {
       this.user = { ...data };

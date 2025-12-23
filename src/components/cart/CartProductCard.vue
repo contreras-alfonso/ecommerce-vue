@@ -4,11 +4,15 @@
       <div class="row items-center q-col-gutter-x-md">
         <div class="col-grow">
           <q-img
+            @click="
+              (router.push(`/product/${localItem.productSlug}`), (mainStore.cartDrawer = false))
+            "
             loading="lazy"
             spinner-color="grey"
             spinner-size="sm"
             :src="localItem.imageUrl"
             width="80px"
+            class="cursor-pointer"
           />
         </div>
         <div class="col">
@@ -71,18 +75,24 @@
   <q-separator color="grey-2" spaced class="q-my-lg"></q-separator>
 </template>
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
 import { useHelpers } from 'src/composables/helpers';
 import { useCartStore } from 'src/stores/cart-store';
 import { useNotify } from 'src/composables/notify';
+import { useStorage } from 'src/composables/storage';
 import type { Item } from 'src/types/cart-response';
 import type { RemoveItemFromCartRequest } from 'src/types/remove-item-cart-request';
+import { useMainStore } from 'src/stores/main-store';
 
 const props = defineProps<{
   item: Item;
 }>();
 
+const router = useRouter();
+const mainStore = useMainStore();
+const { getStorage } = useStorage();
 const cartStore = useCartStore();
 const { toCurrency, onSpinner, handleApiError } = useHelpers();
 const { notifySuccess } = useNotify();
@@ -90,9 +100,15 @@ const localItem = ref<Item>(props.item);
 
 const onRemoveItemFromCart = async (variantId: string) => {
   const payload: RemoveItemFromCartRequest = {
-    cartId: cartStore.getCart?.cartId ?? '',
+    cartId: '',
     variantId: variantId,
   };
+
+  const cartId = getStorage('cartId');
+
+  if (typeof cartId === 'string') {
+    payload.cartId = cartId;
+  }
 
   onSpinner(true);
   try {

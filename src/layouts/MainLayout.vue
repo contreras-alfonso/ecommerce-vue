@@ -9,7 +9,7 @@
               class="cursor-pointer"
               spinner-color="grey"
               spinner-size="sm"
-              style="width: 100px"
+              style="width: 100px; height: 30px"
               src="/svg/logo.svg"
             />
           </div>
@@ -48,56 +48,64 @@
 
           <div class="col-grow">
             <div class="row items-end justify-end">
-              <div
-                v-if="authStore.isAuthenticated"
-                class="row items-center text-grey-9 q-gutter-md"
-              >
-                <div
-                  class="row items-center q-col-gutter-x-sm hover-primary cursor-pointer non-selectable"
-                >
-                  <div>
-                    <q-icon size="25px" name="img:/svg/account.svg" />
-                  </div>
-                  <div>{{ authStore.getUser?.name }}</div>
-                  <q-menu>
-                    <div style="min-width: 250px" class="column q-col-gutter-sm q-pa-sm">
-                      <div v-if="authStore.getRole === 'ADMIN'" class="">
-                        <q-btn
-                          @click="router.push('/administration/products')"
-                          class="full-width bg-secondary text-white"
-                          icon="manage_accounts"
-                          flat
-                          label="Panel administrativo"
-                          rounded
-                        ></q-btn>
-                      </div>
-
-                      <div class="">
-                        <q-btn
-                          @click="router.push('/account/profile')"
-                          class="full-width"
-                          color="grey-10"
-                          icon="person"
-                          flat
-                          label="Mi perfil"
-                          rounded
-                        ></q-btn>
-                      </div>
-
-                      <div class="">
-                        <q-btn
-                          @click="router.push('/logout')"
-                          class="full-width"
-                          color="red"
-                          icon="exit_to_app"
-                          flat
-                          label="Cerrar sesión"
-                          rounded
-                        ></q-btn>
-                      </div>
+              <div class="row items-center text-grey-9 q-gutter-md">
+                <template v-if="authStore.isAuthenticated">
+                  <div
+                    class="row items-center q-col-gutter-x-sm hover-primary cursor-pointer non-selectable"
+                  >
+                    <div>
+                      <q-icon size="25px" name="img:/svg/account.svg" />
                     </div>
-                  </q-menu>
-                </div>
+                    <div>{{ authStore.getUser?.name }}</div>
+                    <q-menu>
+                      <div style="min-width: 250px" class="column q-col-gutter-sm q-pa-sm">
+                        <div v-if="authStore.getRole === 'ADMIN'" class="">
+                          <q-btn
+                            @click="router.push('/administration/products')"
+                            class="full-width bg-secondary text-white"
+                            icon="manage_accounts"
+                            flat
+                            label="Panel administrativo"
+                            rounded
+                          ></q-btn>
+                        </div>
+
+                        <div class="">
+                          <q-btn
+                            @click="router.push('/account/profile')"
+                            class="full-width"
+                            color="grey-10"
+                            icon="person"
+                            flat
+                            label="Mi perfil"
+                            rounded
+                          ></q-btn>
+                        </div>
+
+                        <div class="">
+                          <q-btn
+                            @click="router.push('/logout')"
+                            class="full-width"
+                            color="red"
+                            icon="exit_to_app"
+                            flat
+                            label="Cerrar sesión"
+                            rounded
+                          ></q-btn>
+                        </div>
+                      </div>
+                    </q-menu>
+                  </div>
+                </template>
+
+                <template v-else>
+                  <q-icon
+                    @click="router.push('/login')"
+                    class="cursor-pointer"
+                    size="25px"
+                    name="img:/svg/account.svg"
+                  />
+                </template>
 
                 <q-spinner v-if="loading.cart" color="primary" size="sm" />
                 <q-icon
@@ -111,30 +119,13 @@
                     v-if="cartStore.getCart?.items.length"
                     :label="loading.cart ? undefined : (cartStore.getCart.itemsCount ?? 0)"
                     color="primary"
-                    style="font-size: 10px;"
+                    style="font-size: 10px"
                     rounded
                     floating
                   >
                   </q-badge>
                   <q-spinner color="red" />
                 </q-icon>
-
-              </div>
-
-              <div v-else class="row items-center text-grey-9 q-gutter-md">
-                <q-icon
-                  @click="router.push('/login')"
-                  class="cursor-pointer"
-                  size="25px"
-                  name="img:/svg/account.svg"
-                />
-
-                <q-icon
-                  @click="mainStore.cartDrawer = true"
-                  class="cursor-pointer"
-                  size="25px"
-                  name="img:/svg/cart.svg"
-                />
               </div>
             </div>
           </div>
@@ -207,20 +198,23 @@ import { useMainStore } from 'src/stores/main-store';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useCartStore } from 'src/stores/cart-store';
 import { useCategoryStore } from 'src/stores/category-store';
+import { useStorage } from 'src/composables/storage';
 import CartDrawer from 'src/components/cart/CartDrawer.vue';
 import type { Category } from 'src/types/category';
 import type { Navigation } from 'src/types/navigation';
 import type { Benefit } from 'src/types/benefit';
+import type { FindActiveCartGuest } from 'src/types/find-active-cart-guest';
 
 const categoryStore = useCategoryStore();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const router = useRouter();
 const mainStore = useMainStore();
+const { getStorage } = useStorage();
 
 const loading = ref({
   categories: false,
-  cart: true,
+  cart: false,
 });
 
 const list = ref<{ nav: Navigation[]; benefits: Benefit[] }>({
@@ -323,6 +317,24 @@ const fetchActiveCart = async () => {
     } finally {
       loading.value.cart = false;
     }
+  } else {
+    const payload: FindActiveCartGuest = {
+      cartId: '',
+    };
+
+    const cartId = getStorage('cartId');
+
+    if (typeof cartId === 'string') {
+      payload.cartId = cartId;
+      loading.value.cart = true;
+      try {
+        await cartStore.fetchActiveCartGuest(payload);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        loading.value.cart = false;
+      }
+    }
   }
 };
 
@@ -342,6 +354,7 @@ watch(
 watch(
   () => authStore.isAuthenticated,
   async (newValue: boolean) => {
+    console.log(newValue);
     if (newValue) {
       await fetchActiveCart();
     }
