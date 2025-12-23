@@ -110,7 +110,7 @@
                 <q-spinner v-if="loading.cart" color="primary" size="sm" />
                 <q-icon
                   v-else
-                  @click="mainStore.cartDrawer = true"
+                  @click="cartStore.cartDrawer = true"
                   class="cursor-pointer"
                   size="25px"
                   name="img:/svg/cart.svg"
@@ -194,7 +194,6 @@
 import { useRouter } from 'vue-router';
 import { onMounted, ref, watch } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
-import { useMainStore } from 'src/stores/main-store';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useCartStore } from 'src/stores/cart-store';
 import { useCategoryStore } from 'src/stores/category-store';
@@ -209,7 +208,6 @@ const categoryStore = useCategoryStore();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const router = useRouter();
-const mainStore = useMainStore();
 const { getStorage } = useStorage();
 
 const loading = ref({

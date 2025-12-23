@@ -84,14 +84,12 @@ import { useHelpers } from 'src/composables/helpers';
 import { useStorage } from 'src/composables/storage';
 import { useNotify } from 'src/composables/notify';
 import { useCartStore } from 'src/stores/cart-store';
-import { useMainStore } from 'src/stores/main-store';
 import type { Product } from 'src/types/product';
 import type { VerifyStockAndUpdateRequest } from 'src/types/verify-stock-update-request';
 import { StockUpdateMode } from 'src/types/stock-update-mode';
 
 const props = defineProps<{ product: Product }>();
 
-const mainStore = useMainStore();
 const cartStore = useCartStore();
 const { toCurrency, onSpinner, handleApiError } = useHelpers();
 const { getStorage } = useStorage();
@@ -145,7 +143,7 @@ const onAddProductToCart = async () => {
   try {
     await cartStore.verifyStockAndUpdateCart(payload);
     notifySuccess('El producto fue agregado al carrito');
-    mainStore.cartDrawer = true;
+    cartStore.cartDrawer = true;
   } catch (error) {
     handleApiError(error);
   } finally {

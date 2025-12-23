@@ -57,7 +57,6 @@ import BreadCrum from 'src/components/shared/BreadCrum.vue';
 import ProductDetailSkeleton from 'src/components/products/ProductDetailSkeleton.vue';
 import { useProductStore } from 'src/stores/product-store';
 import { useCartStore } from 'src/stores/cart-store';
-import { useMainStore } from 'src/stores/main-store';
 import { useStorage } from 'src/composables/storage';
 import type { Product, Variant } from 'src/types/product';
 import type { VerifyStockAndUpdateRequest } from 'src/types/verify-stock-update-request';
@@ -71,7 +70,6 @@ const { notifySuccess } = useNotify();
 const route = useRoute();
 const selectedVariant = ref<Variant | null>(null);
 
-const mainStore = useMainStore();
 const cartStore = useCartStore();
 const productStore = useProductStore();
 
@@ -120,7 +118,7 @@ const onAddProductToCart = async (quantity: number) => {
   try {
     await cartStore.verifyStockAndUpdateCart(payload);
     notifySuccess('El producto fue agregado al carrito');
-    mainStore.cartDrawer = true;
+    cartStore.cartDrawer = true;
   } catch (error) {
     handleApiError(error);
   } finally {

@@ -13,6 +13,7 @@ const { setStorage } = useStorage();
 export const useCartStore = defineStore('cart', {
   state: (): CartState => ({
     cart: null,
+    cartDrawer: false,
   }),
 
   getters: {

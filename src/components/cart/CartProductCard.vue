@@ -5,7 +5,7 @@
         <div class="col-grow">
           <q-img
             @click="
-              (router.push(`/product/${localItem.productSlug}`), (mainStore.cartDrawer = false))
+              (router.push(`/product/${localItem.productSlug}`), (cartStore.cartDrawer = false))
             "
             loading="lazy"
             spinner-color="grey"
@@ -84,14 +84,12 @@ import { useNotify } from 'src/composables/notify';
 import { useStorage } from 'src/composables/storage';
 import type { Item } from 'src/types/cart-response';
 import type { RemoveItemFromCartRequest } from 'src/types/remove-item-cart-request';
-import { useMainStore } from 'src/stores/main-store';
 
 const props = defineProps<{
   item: Item;
 }>();
 
 const router = useRouter();
-const mainStore = useMainStore();
 const { getStorage } = useStorage();
 const cartStore = useCartStore();
 const { toCurrency, onSpinner, handleApiError } = useHelpers();

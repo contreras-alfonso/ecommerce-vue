@@ -1,7 +1,7 @@
 <template>
   <q-drawer
     @hide="onClose"
-    v-model="mainStore.cartDrawer"
+    v-model="cartStore.cartDrawer"
     side="right"
     behavior="mobile"
     elevated
@@ -67,7 +67,6 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useMainStore } from 'src/stores/main-store';
 import { useCartStore } from 'src/stores/cart-store';
 import CartProductCard from './CartProductCard.vue';
 import { useHelpers } from 'src/composables/helpers';
@@ -75,11 +74,10 @@ import type { CartResponse, Item } from 'src/types/cart-response';
 
 const cartStore = useCartStore();
 const { toCurrency } = useHelpers();
-const mainStore = useMainStore();
 const items = ref<Item[]>([]);
 
 const onClose = (): void => {
-  mainStore.cartDrawer = false;
+  cartStore.cartDrawer = false;
 };
 
 watch(
