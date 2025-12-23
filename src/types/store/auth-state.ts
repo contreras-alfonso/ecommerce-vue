@@ -4,6 +4,5 @@ export interface AuthState {
   user: AuthResponse | null;
   token: string | null;
   role: string | null;
-  verifyingAuth: boolean;
   authenticated: boolean;
 }

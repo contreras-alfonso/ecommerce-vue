@@ -10,12 +10,11 @@ import type { RegisterResponse } from 'src/types/register-response';
 const USER_TYPE = ['ADMIN', 'USER'];
 const AUTH_TYPE = 'Bearer';
 
-export const useAuth = defineStore('auth', {
+export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     user: null,
     token: null,
     role: null,
-    verifyingAuth: false,
     authenticated: false,
   }),
   getters: {
@@ -24,7 +23,6 @@ export const useAuth = defineStore('auth', {
     isAuthenticated: (state) => state.authenticated,
   },
   actions: {
-
     async login(payload: LoginRequest) {
       const response = await api.post<AuthResponse>(`/api/auth/login`, payload);
       const data = response.data;
@@ -121,5 +119,5 @@ export const useAuth = defineStore('auth', {
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useAuth, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot));
 }

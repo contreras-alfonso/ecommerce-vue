@@ -96,10 +96,10 @@
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { uid } from 'quasar';
-import { useAuth } from 'src/stores/auth-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 
-const authStore = useAuth();
+const authStore = useAuthStore();
 const router = useRouter();
 
 const list = ref({

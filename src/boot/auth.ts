@@ -1,8 +1,8 @@
 import { boot } from 'quasar/wrappers';
-import { useAuth } from 'src/stores/auth-store';
+import { useAuthStore } from 'src/stores/auth-store';
 
 export default boot(({ router }) => {
-  const authStore = useAuth();
+  const authStore = useAuthStore();
 
   router.beforeEach(async (to, from, next) => {
     const requiresAuth = to.meta?.requiresAuth || false;

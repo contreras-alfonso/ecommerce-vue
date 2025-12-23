@@ -87,12 +87,12 @@ import { useRouter } from 'vue-router';
 import { nextTick, onMounted, ref } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
 import type { LoginRequest } from 'src/types/login-request';
-import { useAuth } from 'src/stores/auth-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import { useNotify } from 'src/composables/notify';
 import { useHelpers } from 'src/composables/helpers';
 
 const router = useRouter();
-const authStore = useAuth();
+const authStore = useAuthStore();
 const { notifySuccess } = useNotify();
 const { handleApiError, onSpinner } = useHelpers();
 
@@ -104,8 +104,8 @@ onMounted(async () => {
 });
 
 const login = ref<LoginRequest>({
-  email: '',
-  password: '',
+  email: 'alfonso@admin.com',
+  password: 'alfonso@',
 });
 
 const onLogin = async (): Promise<void> => {

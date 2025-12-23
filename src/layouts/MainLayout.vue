@@ -98,12 +98,27 @@
                     </div>
                   </q-menu>
                 </div>
+
+                <q-spinner v-if="loading.cart" color="primary" size="sm" />
                 <q-icon
+                  v-else
                   @click="mainStore.cartDrawer = true"
                   class="cursor-pointer"
                   size="25px"
                   name="img:/svg/cart.svg"
-                />
+                >
+                  <q-badge
+                    v-if="cartStore.getCart?.items.length"
+                    :label="loading.cart ? undefined : (cartStore.getCart.itemsCount ?? 0)"
+                    color="primary"
+                    style="font-size: 10px;"
+                    rounded
+                    floating
+                  >
+                  </q-badge>
+                  <q-spinner color="red" />
+                </q-icon>
+
               </div>
 
               <div v-else class="row items-center text-grey-9 q-gutter-md">
@@ -189,7 +204,8 @@ import { useRouter } from 'vue-router';
 import { onMounted, ref, watch } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 import { useMainStore } from 'src/stores/main-store';
-import { useAuth } from 'src/stores/auth-store';
+import { useAuthStore } from 'src/stores/auth-store';
+import { useCartStore } from 'src/stores/cart-store';
 import { useCategoryStore } from 'src/stores/category-store';
 import CartDrawer from 'src/components/cart/CartDrawer.vue';
 import type { Category } from 'src/types/category';
@@ -197,12 +213,14 @@ import type { Navigation } from 'src/types/navigation';
 import type { Benefit } from 'src/types/benefit';
 
 const categoryStore = useCategoryStore();
-const authStore = useAuth();
+const authStore = useAuthStore();
+const cartStore = useCartStore();
 const router = useRouter();
 const mainStore = useMainStore();
 
 const loading = ref({
   categories: false,
+  cart: true,
 });
 
 const list = ref<{ nav: Navigation[]; benefits: Benefit[] }>({
@@ -284,16 +302,28 @@ onMounted(async () => {
 });
 
 const onLoad = async () => {
-  loading.value.categories = true;
-  await Promise.all([fetchCategories()])
+  await Promise.all([fetchCategories(), fetchActiveCart()])
     .then(() => {})
-    .finally(() => {
-      loading.value.categories = false;
-    });
+    .finally(() => {});
 };
 
 const fetchCategories = async () => {
+  loading.value.categories = true;
   await categoryStore.fetchAll();
+  loading.value.categories = false;
+};
+
+const fetchActiveCart = async () => {
+  if (authStore.isAuthenticated) {
+    loading.value.cart = true;
+    try {
+      await cartStore.fetchActiveCart();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      loading.value.cart = false;
+    }
+  }
 };
 
 const leftDrawerOpen = ref(false);
@@ -306,6 +336,15 @@ watch(
       title: category.name,
       url: `/${category.slug}`,
     }));
+  },
+);
+
+watch(
+  () => authStore.isAuthenticated,
+  async (newValue: boolean) => {
+    if (newValue) {
+      await fetchActiveCart();
+    }
   },
 );
 </script>

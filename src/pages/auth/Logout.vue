@@ -3,11 +3,11 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from 'src/stores/auth-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
-const authStore = useAuth();
+const authStore = useAuthStore();
 const router = useRouter();
 
 onMounted(() => {

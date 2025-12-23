@@ -204,13 +204,13 @@ import InputElement from 'src/components/elements/Input.vue';
 import SelectElement from 'src/components/elements/Select.vue';
 import type { SelectOption } from 'src/types/select-option';
 import type { RegisterRequest } from 'src/types/register-request';
-import { useAuth } from 'src/stores/auth-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import { useHelpers } from 'src/composables/helpers';
 import { useNotify } from 'src/composables/notify';
 
 const { notifySuccess, notifyError } = useNotify();
 const { handleApiError, onSpinner } = useHelpers();
-const authStore = useAuth();
+const authStore = useAuthStore();
 const router = useRouter();
 
 const step = ref(1);

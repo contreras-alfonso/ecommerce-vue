@@ -1,0 +1,19 @@
+export interface CartResponse {
+    cartId:   string;
+    items:    Item[];
+    itemsCount: number;
+    subtotal: number;
+}
+
+export interface Item {
+    imageUrl:              string;
+    price:                 number;
+    productId:             string;
+    productName:           string;
+    productSlug:           string;
+    quantity:              number;
+    ram:                   string;
+    storage:               string;
+    usesTechnicalVariants: boolean;
+    variantId:             string;
+}

@@ -7,12 +7,12 @@
             loading="lazy"
             spinner-color="grey"
             spinner-size="sm"
-            :src="productCart.img"
+            :src="localItem.imageUrl"
             width="80px"
           />
         </div>
         <div class="col">
-          <div class="text-subtitle1 q-mb-md">{{ productCart.name }}</div>
+          <div class="text-subtitle1 q-mb-md">{{ localItem.productName }}</div>
           <div class="row items-center q-col-gutter-x-sm">
             <div class="w-fit">
               <div class="row items-center quantity-control">
@@ -20,8 +20,8 @@
                 <InputElement
                   style="width: 60px"
                   dense
-                  :model-value="productCart.quantity"
-                  @update:model-value="(val: number) => (productCart.quantity = val)"
+                  :model-value="localItem.quantity"
+                  @update:model-value="(val: number) => (localItem.quantity = val)"
                   icon-color="grey"
                   :outlined="true"
                   :length-required="11"
@@ -53,7 +53,7 @@
 
     <div class="col-grow">
       <div class="row items-start q-col-gutter-x-sm">
-        <div class="text-subtitle1 text-secondary">S/ {{ toCurrency(productCart.price) }}</div>
+        <div class="text-subtitle1 text-secondary">S/ {{ toCurrency(item.price) }}</div>
         <div><q-btn round size="sm" icon="close" color="grey-6" flat></q-btn></div>
       </div>
     </div>
@@ -64,20 +64,20 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
-import type { ProductCart } from 'src/types/product-cart';
 import { useHelpers } from 'src/composables/helpers';
+import type { Item } from 'src/types/cart-response';
 
 const props = defineProps<{
-  product: ProductCart;
+  item: Item;
 }>();
 
 const { toCurrency } = useHelpers();
-const productCart = ref<ProductCart>(props.product);
+const localItem = ref<Item>(props.item);
 
 watch(
-  () => props.product,
+  () => props.item,
   (newValue) => {
-    productCart.value = newValue;
+    localItem.value = newValue;
   },
 );
 </script>
