@@ -20,7 +20,13 @@
           <div class="row items-center q-col-gutter-x-sm">
             <div class="w-fit">
               <div class="row items-center quantity-control">
-                <q-btn size="sm" class="no-border-radius" flat icon="remove" />
+                <q-btn
+                  @click="onDecreaseQuantity"
+                  size="sm"
+                  class="no-border-radius"
+                  flat
+                  icon="remove"
+                />
                 <InputElement
                   style="width: 60px"
                   dense
@@ -29,19 +35,26 @@
                   icon-color="grey"
                   :outlined="true"
                   :length-required="11"
-                  time="1500"
                   bg-color="grey-2"
                   no-border
                   text-center
                   is-square
                   input-height="30px"
                 />
-                <q-btn size="sm" class="no-border-radius" flat icon="add" />
+                <q-btn
+                  @click="onIncreaseQuantity"
+                  size="sm"
+                  class="no-border-radius"
+                  flat
+                  icon="add"
+                />
               </div>
             </div>
 
             <div>
               <q-btn
+                v-if="showUpdateButton"
+                @click="onUpdateStock"
                 flat
                 no-caps
                 color="primary"
@@ -76,7 +89,7 @@
 </template>
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
 import { useHelpers } from 'src/composables/helpers';
 import { useCartStore } from 'src/stores/cart-store';
@@ -84,6 +97,8 @@ import { useNotify } from 'src/composables/notify';
 import { useStorage } from 'src/composables/storage';
 import type { Item } from 'src/types/cart-response';
 import type { RemoveItemFromCartRequest } from 'src/types/remove-item-cart-request';
+import type { VerifyStockAndUpdateRequest } from 'src/types/verify-stock-update-request';
+import { StockUpdateMode } from 'src/types/stock-update-mode';
 
 const props = defineProps<{
   item: Item;
@@ -95,6 +110,46 @@ const cartStore = useCartStore();
 const { toCurrency, onSpinner, handleApiError } = useHelpers();
 const { notifySuccess } = useNotify();
 const localItem = ref<Item>(props.item);
+
+const showUpdateButton = computed(() => {
+  return localItem.value.quantity !== localItem.value.baseQuantity;
+});
+
+const onUpdateStock = async () => {
+  const payload: VerifyStockAndUpdateRequest = {
+    mode: StockUpdateMode.REPLACE,
+    cartId: '',
+    variantId: localItem.value.variantId,
+    quantity: localItem.value.quantity,
+  };
+
+  const cartId = getStorage('cartId');
+
+  if (typeof cartId === 'string') {
+    payload.cartId = cartId;
+  }
+
+  onSpinner(true);
+  try {
+    await cartStore.verifyStockAndUpdateCart(payload);
+    notifySuccess('El stock fue acualizado');
+    cartStore.cartDrawer = true;
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
+  }
+};
+
+const onDecreaseQuantity = () => {
+  if (localItem.value.quantity > 1) {
+    localItem.value.quantity--;
+  }
+};
+
+const onIncreaseQuantity = () => {
+  localItem.value.quantity++;
+};
 
 const onRemoveItemFromCart = async (variantId: string) => {
   const payload: RemoveItemFromCartRequest = {
@@ -123,7 +178,9 @@ watch(
   () => props.item,
   (newValue) => {
     localItem.value = newValue;
+    localItem.value.baseQuantity = newValue.quantity;
   },
+  { immediate: true },
 );
 </script>
 <style lang=""></style>

@@ -8,7 +8,7 @@
     class="q-px-lg q-pt-lg q-pb-md"
     :width="$q.screen.xs ? 350 : 560"
   >
-    <q-form ref="formCreate" class="full-height">
+    <q-form @submit="onBuy" ref="formCreate" class="full-height">
       <div class="column justify-between full-height">
         <q-card-section class="q-px-none q-pt-none">
           <div class="row items-center justify-between">
@@ -17,7 +17,6 @@
               <span v-if="cartStore.getCart" class="text-weight-regular"
                 >({{ cartStore.getCart?.itemsCount }})</span
               >
-              <!-- <q-spinner class="q-ml-sm" color="primary" /> -->
             </div>
             <q-btn @click="onClose" icon="close" color="grey-6" size="md" round flat />
           </div>
@@ -79,6 +78,8 @@ const items = ref<Item[]>([]);
 const onClose = (): void => {
   cartStore.cartDrawer = false;
 };
+
+const onBuy = () => {};
 
 watch(
   () => cartStore.getCart,

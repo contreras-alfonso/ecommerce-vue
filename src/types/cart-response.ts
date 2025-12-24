@@ -15,6 +15,7 @@ export interface Item {
     productName:           string;
     productSlug:           string;
     quantity:              number;
+    baseQuantity?:          number;
     ram:                   string;
     storage:               string;
     usesTechnicalVariants: boolean;
