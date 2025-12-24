@@ -27,65 +27,11 @@
                 transition-next="jump-up"
               >
                 <q-tab-panel name="profile">
-                  <div class="row items-center">
-                    <div class="col text-h6">Información de perfil</div>
-                    <div class="col-grow">
-                      <q-btn
-                        @click="onNavigateSection('profile-edit')"
-                        flat
-                        size="sm"
-                        label="Editar"
-                        class="bg-secondary text-white"
-                        icon="mode"
-                      />
-                    </div>
-                  </div>
-
-                  <q-separator spaced></q-separator>
-
-                  <div class="row q-col-gutter-sm q-py-md">
-                    <div class="col-6">
-                      <div class="column text-subtitle1">
-                        <div class="text-grey-7">Nombres</div>
-                        <div>Alfonso</div>
-                      </div>
-                    </div>
-
-                    <div class="col-6">
-                      <div class="column text-subtitle1">
-                        <div class="text-grey-7">Apellidos</div>
-                        <div>Contreras Gómez</div>
-                      </div>
-                    </div>
-
-                    <div class="col-6">
-                      <div class="column text-subtitle1">
-                        <div class="text-grey-7">Número de documento</div>
-                        <div>78414785</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row items-center">
-                    <div class="col text-h6">Métodos de contacto</div>
-                  </div>
-
-                  <q-separator spaced></q-separator>
-                  <div class="row q-col-gutter-sm q-py-md">
-                    <div class="col-6">
-                      <div class="column text-subtitle1">
-                        <div class="text-grey-7">Correo</div>
-                        <div>contrerasalfonso.lino@gmail.com</div>
-                      </div>
-                    </div>
-
-                    <div class="col-6">
-                      <div class="column text-subtitle1">
-                        <div class="text-grey-7">Celular</div>
-                        <div>+5199962100</div>
-                      </div>
-                    </div>
-                  </div>
+                  <ProfileTab
+                    :profile="profile"
+                    :loading="loading.profile"
+                    @on-navigate-section="onNavigateSection"
+                  />
                 </q-tab-panel>
 
                 <q-tab-panel name="orders">
@@ -127,100 +73,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="profile-edit">
-                  <q-form @submit="onUpdateProfile">
-                    <div class="text-h6 q-mb-md">Modificar datos</div>
-
-                    <div class="row q-col-gutter-md">
-                      <div class="col-md-6 col-12">
-                        <InputElement
-                          label="Nombres"
-                          :model-value="profile.name"
-                          @update:model-value="(val: string) => (profile.name = val)"
-                          :outlined="true"
-                          bg-color="white"
-                          border-black
-                          is-square
-                          :rules-config="['isRequired']"
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <InputElement
-                          label="Apellidos"
-                          :model-value="profile.lastname"
-                          @update:model-value="(val: string) => (profile.lastname = val)"
-                          :outlined="true"
-                          bg-color="white"
-                          border-black
-                          is-square
-                          :rules-config="['isRequired']"
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <InputElement
-                          label="Correo"
-                          :model-value="profile.email"
-                          @update:model-value="(val: string) => (profile.email = val)"
-                          :outlined="true"
-                          bg-color="grey-2"
-                          is-square
-                          :rules-config="['isRequired']"
-                          is-read-only
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <InputElement
-                          label="Celular"
-                          :model-value="profile.phone"
-                          @update:model-value="(val: string) => (profile.phone = val)"
-                          :outlined="true"
-                          bg-color="white"
-                          border-black
-                          is-square
-                          :rules-config="['isRequired']"
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <SelectElement
-                          :model-value="profile.documentType"
-                          @update:model-value="(val: string) => (profile.documentType = val)"
-                          label="Tipo de documento"
-                          :options="options.documentType"
-                          :rules-config="['isRequired']"
-                          :outlined="true"
-                          border-black
-                          :is-clearable="false"
-                          :use-input="false"
-                          is-square
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <InputElement
-                          label="Número de documento"
-                          :model-value="profile.documentNumber"
-                          @update:model-value="(val: string) => (profile.documentNumber = val)"
-                          :outlined="true"
-                          bg-color="white"
-                          border-black
-                          is-square
-                          :rules-config="['isRequired']"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="q-mt-lg">
-                      <q-btn
-                        type="submit"
-                        class="bg-secondary text-white q-px-xl q-py-md full-width text-weight-regular"
-                        label="Actualizar datos"
-                        flat
-                      />
-                    </div>
-                  </q-form>
+                  <ProfileEdit :profile="profile" :loading="loading.profile" />
                 </q-tab-panel>
 
                 <q-tab-panel name="addresses-add">
@@ -344,19 +197,28 @@ import { useRouter, useRoute } from 'vue-router';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import InputElement from 'src/components/elements/Input.vue';
 import SelectElement from 'src/components/elements/Select.vue';
+import ProfileEdit from 'src/components/account/ProfileEdit.vue';
 import type { SelectOption } from 'src/types/select-option';
 import type { Address } from 'src/types/address';
 import { departments } from 'boot/ubigeo';
 import { ubigeoFilterDistrict, ubigeoFilterProvince } from 'boot/filters';
 import { TabAccount } from 'src/types/tab-account';
+import { useProfileStore } from 'src/stores/profile-store';
+import type { Profile } from 'src/types/profile';
+import ProfileTab from 'src/components/account/Profile.vue';
 
+const profileStore = useProfileStore();
 const router = useRouter();
 const route = useRoute();
 const map = ref<L.Map | null>(null);
 const marker = ref<Marker | null>(null);
+const profile = ref<Profile | null>(null);
 
 const tab = ref('profile');
 const splitterModel = ref(20);
+const loading = ref({
+  profile: false,
+});
 
 const departmentOptions = computed(() => {
   const dataFilter: SelectOption[] = [];
@@ -381,7 +243,6 @@ const districtOptionsFilter = computed(() => {
 });
 
 onMounted(async () => {
-  await onSetTab();
   await nextTick();
   if (route.params.section === 'addresses-add') {
     onLoadMap();
@@ -452,15 +313,6 @@ const onUpdateProvince = (val: string) => {
   newAddress.value.district = null;
 };
 
-const profile = ref({
-  name: 'Alfonso',
-  lastname: 'Contreras Gómez',
-  email: 'contrerasalfonso.lino@gmail.com',
-  phone: '984852214',
-  documentType: 'DNI',
-  documentNumber: '74851425',
-});
-
 const newAddress = ref<Address>({
   address: 'Av. Caminos del Inca 22, Santiago de Surco 15039',
   reference: 'A 2 cuadras de la municipalidad',
@@ -470,27 +322,45 @@ const newAddress = ref<Address>({
   district: null,
 });
 
-const options = ref<{ documentType: SelectOption[] }>({
-  documentType: [
-    {
-      name: 'DNI',
-      id: 'DNI',
-    },
-    {
-      name: 'CÉDULA',
-      id: 'CED',
-    },
-  ],
-});
-
-const onUpdateProfile = (): void => {};
-
 const onAddAddress = (): void => {};
+
+const findProfile = async () => {
+  loading.value.profile = true;
+  try {
+    await profileStore.findProfile();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value.profile = false;
+  }
+};
 
 watch(
   () => route.params.section,
-  async () => {
+  async (val) => {
+    console.log(val);
+    if (val === 'profile-edit' || val === 'profile') {
+      loading.value.profile = true;
+      await findProfile();
+    }
     await onSetTab();
+  },
+  { immediate: true },
+);
+
+watch(
+  () => tab.value,
+  () => {
+    if (tab.value === 'profile-edit' || tab.value === 'profile') {
+      loading.value.profile = true;
+    }
+  },
+);
+
+watch(
+  () => profileStore.profile,
+  (val: Profile | null) => {
+    profile.value = val;
   },
 );
 </script>

@@ -5,7 +5,7 @@
     side="right"
     behavior="mobile"
     elevated
-    class="q-px-lg q-pt-lg q-pb-md"
+    class="q-px-lg q-py-md"
     :width="$q.screen.xs ? 350 : 560"
   >
     <q-form @submit="onBuy" ref="formCreate" class="full-height">
