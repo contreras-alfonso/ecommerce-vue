@@ -2,19 +2,25 @@
   <q-page class="q-py-xl q-px-md">
     <div class="row items-center justify-center">
       <div class="col-md-10 col-12 q-gutter-y-md">
-        <div>
-          <BreadCrum title="Mi carrito" />
-        </div>
+        <template v-if="loading.cart">
+          <CheckoutSkeleton />
+        </template>
 
-        <Title title="Mi carrito" />
-        <div class="row q-col-gutter-x-xl">
-          <div class="col-8">
-            <MarkupItemsCheckout />
+        <template v-else>
+          <div>
+            <BreadCrum title="Mi carrito" />
           </div>
-          <div class="col-4">
-            <TotalCartCheckout />
+
+          <Title title="Mi carrito" />
+          <div class="row q-col-gutter-x-xl">
+            <div class="col-8">
+              <MarkupItemsCheckout />
+            </div>
+            <div class="col-4">
+              <TotalCartCheckout />
+            </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </q-page>
@@ -29,6 +35,7 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { useCartStore } from 'src/stores/cart-store';
 import { useStorage } from 'src/composables/storage';
 import { FindActiveCartGuest } from 'src/types/find-active-cart-guest';
+import CheckoutSkeleton from 'src/components/cart/CheckoutSkeleton.vue';
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
@@ -49,6 +56,7 @@ const onLoad = async () => {
 };
 
 const fetchActiveCart = async () => {
+  console.log('fetch active');
   if (authStore.isAuthenticated) {
     loading.value.cart = true;
     try {

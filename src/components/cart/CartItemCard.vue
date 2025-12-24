@@ -18,7 +18,7 @@
         <div class="text-subtitle1">{{ localItem.productName }}</div>
       </div>
     </td>
-    <td class="text-right">
+    <td class="text-center">
       <div class="text-subtitle2">S/ {{ toCurrency(localItem.price) }}</div>
     </td>
     <td class="text-center">
@@ -63,7 +63,7 @@
         </div>
       </div>
     </td>
-    <td class="text-right">
+    <td class="text-center">
       <div class="text-weight-bold text-subtitle1">S/ {{ toCurrency(localItem.subtotal) }}</div>
     </td>
     <td class="text-right">

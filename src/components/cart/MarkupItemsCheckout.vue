@@ -5,13 +5,13 @@
         <th class="text-left text-secondary">
           <div class="text-subtitle2">Producto</div>
         </th>
-        <th class="text-right text-secondary">
+        <th class="text-center text-secondary">
           <div class="text-subtitle2">Precio</div>
         </th>
         <th class="text-center text-secondary">
           <div class="text-subtitle2">Cantidad</div>
         </th>
-        <th class="text-right text-secondary">
+        <th class="text-center text-secondary">
           <div class="text-subtitle2">Subtotal</div>
         </th>
         <th class="text-right text-secondary"></th>
@@ -41,6 +41,7 @@ watch(
       items.value = [...newValue.items];
     }
   },
+  { immediate: true },
 );
 </script>
 <style lang=""></style>

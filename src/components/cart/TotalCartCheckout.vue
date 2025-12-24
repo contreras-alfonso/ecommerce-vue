@@ -76,6 +76,7 @@ watch(
       total.value = newValue.subtotal;
     }
   },
+  { immediate: true },
 );
 </script>
 <style lang=""></style>
