@@ -135,6 +135,7 @@ const onUpdateStock = async () => {
     notifySuccess('El stock fue acualizado');
     cartStore.cartDrawer = true;
   } catch (error) {
+    localItem.value.quantity = localItem.value.baseQuantity!;
     handleApiError(error);
   } finally {
     onSpinner(false);
@@ -177,7 +178,7 @@ const onRemoveItemFromCart = async (variantId: string) => {
 watch(
   () => props.item,
   (newValue) => {
-    localItem.value = newValue;
+    localItem.value = { ...newValue };
     localItem.value.baseQuantity = newValue.quantity;
   },
   { immediate: true },

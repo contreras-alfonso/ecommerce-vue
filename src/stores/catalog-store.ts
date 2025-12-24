@@ -24,6 +24,11 @@ export const useCatalogStore = defineStore('catalog', {
         this.baseBrands = data.filters.brands;
       }
     },
+
+    clear() {
+      this.productSearch = null;
+      this.baseBrands = [];
+    },
   },
 });
 

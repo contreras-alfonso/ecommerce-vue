@@ -41,6 +41,10 @@ export const useBrandStore = defineStore('brand', {
     setAll(brands: Brand[]) {
       this.brands = brands;
     },
+
+    clear() {
+      this.brands = [];
+    },
   },
 });
 

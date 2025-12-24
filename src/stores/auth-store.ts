@@ -3,6 +3,7 @@ import { LocalStorage, SessionStorage } from 'quasar';
 import { api } from 'boot/axios';
 import { Notify } from 'quasar';
 import { useStorage } from 'src/composables/storage';
+import { useCartStore } from './cart-store';
 import type { LoginRequest } from 'src/types/login-request';
 import type { AuthResponse } from 'src/types/auth-response';
 import type { AuthState } from 'src/types/store/auth-state';
@@ -12,6 +13,7 @@ import type { RegisterResponse } from 'src/types/register-response';
 const USER_TYPE = ['ADMIN', 'USER'];
 const AUTH_TYPE = 'Bearer';
 
+const cartStore = useCartStore();
 const { setStorage, getStorage } = useStorage();
 
 export const useAuthStore = defineStore('auth', {
@@ -91,27 +93,6 @@ export const useAuthStore = defineStore('auth', {
       this.clear();
     },
 
-    // getStorage(key: string) {
-    //   if (LocalStorage.has(key)) {
-    //     return LocalStorage.getItem(key);
-    //   } else if (SessionStorage.has(key)) {
-    //     return SessionStorage.getItem(key);
-    //   }
-    //   return null;
-    // },
-
-    // setStorage<T>(key: string, value: T | null) {
-    //   if (value === null) {
-    //     if (LocalStorage.has(key)) {
-    //       LocalStorage.remove(key);
-    //     } else if (SessionStorage.has(key)) {
-    //       SessionStorage.remove(key);
-    //     }
-    //   } else {
-    //     LocalStorage.set(key, value);
-    //   }
-    // },
-
     setUser(data: AuthResponse) {
       this.user = { ...data };
     },
@@ -123,6 +104,7 @@ export const useAuthStore = defineStore('auth', {
       this.role = null;
       LocalStorage.clear();
       SessionStorage.clear();
+      cartStore.clear();
     },
   },
 });

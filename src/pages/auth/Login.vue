@@ -104,8 +104,8 @@ onMounted(async () => {
 });
 
 const login = ref<LoginRequest>({
-  email: 'alfonso@admin.com',
-  password: 'alfonso@',
+  email: '',
+  password: '',
 });
 
 const onLogin = async (): Promise<void> => {

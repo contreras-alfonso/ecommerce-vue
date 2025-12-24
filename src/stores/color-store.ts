@@ -41,6 +41,10 @@ export const useColorStore = defineStore('color', {
     setAll(colors: Color[]) {
       this.colors = colors;
     },
+
+    clear() {
+      this.colors = [];
+    },
   },
 });
 

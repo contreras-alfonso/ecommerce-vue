@@ -43,6 +43,11 @@ export const useProductStore = defineStore('product', {
     setAll(products: Product[]) {
       this.products = products;
     },
+
+    clear() {
+      this.products = [];
+      this.product = null;
+    },
   },
 });
 

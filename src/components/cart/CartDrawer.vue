@@ -85,7 +85,7 @@ watch(
   () => cartStore.getCart,
   (newValue: CartResponse | null) => {
     if (newValue) {
-      items.value = newValue.items;
+      items.value = [...newValue.items];
     }
   },
 );

@@ -48,6 +48,11 @@ export const useCartStore = defineStore('cart', {
       this.cart = data;
       setStorage('cartId', this.cart?.cartId);
     },
+
+    clear() {
+      this.cart = null;
+      this.cartDrawer = false;
+    },
   },
 });
 

@@ -11,7 +11,8 @@ export const useCategoryStore = defineStore('category', {
   getters: {
     getAll: (state) => state.categories,
     getById: (state) => (id: string) => state.categories.find((category) => category.id === id),
-    getNameBySlug: (state) => (slug: string) => state.categories.find((category) => category.slug === slug)?.slug ?? null,
+    getNameBySlug: (state) => (slug: string) =>
+      state.categories.find((category) => category.slug === slug)?.slug ?? null,
   },
 
   actions: {
@@ -41,6 +42,10 @@ export const useCategoryStore = defineStore('category', {
 
     setAll(categories: Category[]) {
       this.categories = categories;
+    },
+
+    clear() {
+      this.categories = [];
     },
   },
 });
