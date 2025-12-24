@@ -29,7 +29,7 @@
             <template v-if="cartStore.getCart">
               <div class="row q-col-gutter-y-sm">
                 <div class="col-12" v-for="item in items" :key="item.variantId">
-                  <CartProductCard :item="item" />
+                  <CartItemCard :item="item" :is-to-markup-table="false" />
                 </div>
               </div>
             </template>
@@ -65,12 +65,14 @@
   </q-drawer>
 </template>
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
 import { useCartStore } from 'src/stores/cart-store';
-import CartProductCard from './CartProductCard.vue';
+import CartItemCard from './CartItemCard.vue';
 import { useHelpers } from 'src/composables/helpers';
 import type { CartResponse, Item } from 'src/types/cart-response';
 
+const router = useRouter();
 const cartStore = useCartStore();
 const { toCurrency } = useHelpers();
 const items = ref<Item[]>([]);
@@ -79,7 +81,9 @@ const onClose = (): void => {
   cartStore.cartDrawer = false;
 };
 
-const onBuy = () => {};
+const onBuy = async () => {
+  await router.push('/cart/checkout');
+};
 
 watch(
   () => cartStore.getCart,

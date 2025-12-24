@@ -74,6 +74,19 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    path: '/cart',
+    component: () => import('layouts/MainLayout.vue'),
+    redirect: '/cart/checkout',
+    children: [
+      {
+        path: 'checkout',
+        component: () => import('pages/cart/Checkout.vue'),
+        meta: { title: 'Productos', requiresAuth: false },
+      },
+    ],
+  },
+
+  {
     path: '/:catchAll(.*)*',
     component: () => import('layouts/MainLayout.vue'),
     children: [

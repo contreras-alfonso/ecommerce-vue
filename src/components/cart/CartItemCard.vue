@@ -1,5 +1,84 @@
 <template>
-  <div class="row justify-between q-col-gutter-x-md q-mb-md">
+  <template v-if="isToMarkupTable">
+    <td class="text-left">
+      <div class="row items-center">
+        <div>
+          <q-img
+            @click="
+              (router.push(`/product/${localItem.productSlug}`), (cartStore.cartDrawer = false))
+            "
+            loading="lazy"
+            spinner-color="grey"
+            spinner-size="sm"
+            :src="localItem.imageUrl"
+            width="80px"
+            class="cursor-pointer"
+          />
+        </div>
+        <div class="text-subtitle1">{{ localItem.productName }}</div>
+      </div>
+    </td>
+    <td class="text-right">
+      <div class="text-subtitle2">S/ {{ toCurrency(localItem.price) }}</div>
+    </td>
+    <td class="text-center">
+      <div class="row items-center justify-center q-col-gutter-y-sm">
+        <div class="w-fit">
+          <div class="row items-center quantity-control">
+            <q-btn
+              @click="onDecreaseQuantity"
+              size="sm"
+              class="no-border-radius"
+              flat
+              icon="remove"
+            />
+            <InputElement
+              style="width: 60px"
+              dense
+              :model-value="localItem.quantity"
+              @update:model-value="(val: number) => (localItem.quantity = val)"
+              icon-color="grey"
+              :outlined="true"
+              :length-required="11"
+              bg-color="grey-2"
+              no-border
+              text-center
+              is-square
+              input-height="30px"
+            />
+            <q-btn @click="onIncreaseQuantity" size="sm" class="no-border-radius" flat icon="add" />
+          </div>
+        </div>
+
+        <div v-if="showUpdateButton" class="col-12">
+          <q-btn
+            @click="onUpdateStock(false)"
+            flat
+            no-caps
+            color="primary"
+            label="Actualizar"
+            class="btn-update-quantity text-black"
+            size="sm"
+          ></q-btn>
+        </div>
+      </div>
+    </td>
+    <td class="text-right">
+      <div class="text-weight-bold text-subtitle1">S/ {{ toCurrency(localItem.subtotal) }}</div>
+    </td>
+    <td class="text-right">
+      <q-btn
+        @click="onRemoveItemFromCart(localItem.variantId)"
+        round
+        size="sm"
+        icon="close"
+        class="bg-grey-3 text-grey-6"
+        flat
+      ></q-btn>
+    </td>
+  </template>
+
+  <div v-else class="row justify-between q-col-gutter-x-md q-mb-md">
     <div class="col">
       <div class="row items-center q-col-gutter-x-md">
         <div class="col-grow">
@@ -54,7 +133,7 @@
             <div>
               <q-btn
                 v-if="showUpdateButton"
-                @click="onUpdateStock"
+                @click="onUpdateStock()"
                 flat
                 no-caps
                 color="primary"
@@ -70,7 +149,7 @@
 
     <div class="col-grow">
       <div class="row items-start q-col-gutter-x-sm">
-        <div class="text-subtitle1 text-secondary">S/ {{ toCurrency(item.price) }}</div>
+        <div class="text-subtitle1 text-secondary">S/ {{ toCurrency(localItem.price) }}</div>
         <div>
           <q-btn
             @click="onRemoveItemFromCart(localItem.variantId)"
@@ -101,6 +180,7 @@ import type { VerifyStockAndUpdateRequest } from 'src/types/verify-stock-update-
 import { StockUpdateMode } from 'src/types/stock-update-mode';
 
 const props = defineProps<{
+  isToMarkupTable: boolean;
   item: Item;
 }>();
 
@@ -115,7 +195,7 @@ const showUpdateButton = computed(() => {
   return localItem.value.quantity !== localItem.value.baseQuantity;
 });
 
-const onUpdateStock = async () => {
+const onUpdateStock = async (showDrawer: boolean = true) => {
   const payload: VerifyStockAndUpdateRequest = {
     mode: StockUpdateMode.REPLACE,
     cartId: '',
@@ -133,7 +213,7 @@ const onUpdateStock = async () => {
   try {
     await cartStore.verifyStockAndUpdateCart(payload);
     notifySuccess('El stock fue acualizado');
-    cartStore.cartDrawer = true;
+    if (showDrawer) cartStore.cartDrawer = true;
   } catch (error) {
     localItem.value.quantity = localItem.value.baseQuantity!;
     handleApiError(error);

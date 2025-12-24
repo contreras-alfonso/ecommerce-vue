@@ -11,6 +11,7 @@ export interface CartResponse {
 export interface Item {
     imageUrl:              string;
     price:                 number;
+    subtotal:              number;
     productId:             string;
     productName:           string;
     productSlug:           string;
