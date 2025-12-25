@@ -1,9 +1,10 @@
 export interface Address {
+  id: string;
   address: string;
   reference: string;
   phone: string;
-  department: string | null;
-  province: string | null;
-  district: string | null;
   isDefault: boolean;
+  ubigeo: number;
+  lat: number;
+  lng: number;
 }

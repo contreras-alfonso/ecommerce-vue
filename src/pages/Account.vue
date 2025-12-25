@@ -53,23 +53,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="addresses">
-                  <div class="text-h6 q-mb-md">Direcciones</div>
-                  <div class="column items-center justify-center">
-                    <div class="">
-                      <q-icon name="add_location_alt" color="grey-5" size="xl" />
-                    </div>
-                    <div class="q-mt-md">
-                      Aún no cuentas con direcciones, empieza agregando una nueva.
-                    </div>
-                    <div class="q-mt-md">
-                      <q-btn
-                        @click="onNavigateSection('addresses-add')"
-                        class="bg-secondary text-white q-px-xl q-py-md full-width text-weight-regular"
-                        label="Agregar nueva dirección"
-                        flat
-                      />
-                    </div>
-                  </div>
+                  <Addresses @on-navigate-section="onNavigateSection" />
                 </q-tab-panel>
 
                 <q-tab-panel name="profile-edit">
@@ -97,6 +81,7 @@ import { useProfileStore } from 'src/stores/profile-store';
 import type { Profile } from 'src/types/profile';
 import ProfileTab from 'src/components/account/Profile.vue';
 import NewAddress from 'src/components/account/NewAddress.vue';
+import Addresses from 'src/components/account/Addresses.vue';
 
 const profileStore = useProfileStore();
 const router = useRouter();

@@ -117,12 +117,12 @@ import SelectElement from 'src/components/elements/Select.vue';
 import type { SelectOption } from 'src/types/select-option';
 import { departments } from 'boot/ubigeo';
 import { ubigeoFilterDistrict, ubigeoFilterProvince } from 'boot/filters';
-import type { Address } from 'src/types/address';
+import type { AddressForm } from 'src/types/address-form';
 import type { AddressRequest } from 'src/types/address-request';
 
 const map = ref<L.Map | null>(null);
 const marker = ref<Marker | null>(null);
-const newAddress = ref<Address>({
+const newAddress = ref<AddressForm>({
   address: 'Av. Caminos del Inca 22, Santiago de Surco 15039',
   reference: 'A 2 cuadras de la municipalidad',
   phone: '984852214',
