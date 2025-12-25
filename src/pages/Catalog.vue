@@ -320,7 +320,6 @@ const onUpdateQuery = async () => {
       appliedFilters.value.rangePrice.max !== defaultFilters.value.rangePrice.max) &&
     hasTouchedFilters.value.rangePrice
   ) {
-    console.log(appliedFilters.value.rangePrice);
     query.min_price = appliedFilters.value.rangePrice.min;
     query.max_price = appliedFilters.value.rangePrice.max;
   }
@@ -350,7 +349,6 @@ const onSetFiltersFromQuery = (): void => {
     };
     filtersHasRangePrice.value = true;
     hasTouchedFilters.value.rangePrice = true;
-    console.log(appliedFilters.value.rangePrice);
   }
 
   if (brand) {
@@ -406,7 +404,6 @@ watch(
         defaultFilters.value.rangePrice.min = newValue.filters.minPrice;
         filtersHasRangePrice.value = true;
       } else {
-        console.log(hasTouchedFilters.value.rangePrice);
         if (!hasTouchedFilters.value.rangePrice) {
           appliedFilters.value.rangePrice.max = newValue.filters.maxPrice;
           appliedFilters.value.rangePrice.min = newValue.filters.minPrice;

@@ -56,7 +56,6 @@ const onLoad = async () => {
 };
 
 const fetchActiveCart = async () => {
-  console.log('fetch active');
   if (authStore.isAuthenticated) {
     loading.value.cart = true;
     try {

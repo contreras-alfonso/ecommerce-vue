@@ -36,8 +36,8 @@
 
       <div class="col-6">
         <div class="column text-subtitle1">
-          <div class="text-grey-7">Número de documento</div>
-          <div>{{ profile?.documentType }}</div>
+          <div class="text-grey-7">Tipo de documento</div>
+          <div>{{ getNameDocumentType }}</div>
         </div>
       </div>
 
@@ -72,13 +72,47 @@
   </template>
 </template>
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 import type { Profile } from 'src/types/profile';
 import ProfileSkeleton from './ProfileSkeleton.vue';
+import type { SelectOption } from 'src/types/select-option';
 const emit = defineEmits(['onNavigateSection']);
 const props = defineProps<{ profile: Profile | null; loading: boolean }>();
+
+const getNameDocumentType = computed(() => {
+  const findIndex = options.value.documentType.findIndex(
+    (type) => type.id === localProfile.value?.documentType,
+  );
+  if (findIndex !== -1) {
+    return options.value.documentType[findIndex]?.name;
+  }
+  return '';
+});
+
+const options = ref<{ documentType: SelectOption[] }>({
+  documentType: [
+    {
+      name: 'DNI',
+      id: 'DNI',
+    },
+    {
+      name: 'CÉDULA',
+      id: 'CED',
+    },
+  ],
+});
+
+const localProfile = ref<Profile | null>(props.profile);
 
 const onNavigateSection = (section: string) => {
   emit('onNavigateSection', section);
 };
+
+watch(
+  () => props.profile,
+  (val: Profile | null) => {
+    localProfile.value = val;
+  },
+);
 </script>
 <style lang=""></style>

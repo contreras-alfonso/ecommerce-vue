@@ -77,107 +77,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="addresses-add">
-                  <q-form @submit="onAddAddress">
-                    <div class="text-h6 q-mb-md">Agregar nueva dirección</div>
-
-                    <div class="row q-col-gutter-md">
-                      <div class="col-md-6 col-12">
-                        <InputElement
-                          label="Dirección"
-                          :model-value="newAddress.address"
-                          @update:model-value="(val: string) => (newAddress.address = val)"
-                          :outlined="true"
-                          bg-color="white"
-                          border-black
-                          is-square
-                          :rules-config="['isRequired']"
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <InputElement
-                          label="Referencia (Opcional)"
-                          :model-value="newAddress.reference"
-                          @update:model-value="(val: string) => (newAddress.reference = val)"
-                          :outlined="true"
-                          bg-color="white"
-                          border-black
-                          is-square
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <InputElement
-                          label="Celular"
-                          :model-value="newAddress.phone"
-                          @update:model-value="(val: string) => (newAddress.phone = val)"
-                          :outlined="true"
-                          bg-color="white"
-                          border-black
-                          is-square
-                          :rules-config="['isRequired']"
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <SelectElement
-                          :model-value="newAddress.department"
-                          @update:model-value="(val: string) => onUpdateDepartment(val)"
-                          label="Departamento"
-                          :options="departmentOptions"
-                          :rules-config="['isRequired']"
-                          :outlined="true"
-                          border-black
-                          is-square
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <SelectElement
-                          :model-value="newAddress.province"
-                          @update:model-value="(val: string) => onUpdateProvince(val)"
-                          label="Provincia"
-                          :options="provinceOptionsFilter"
-                          :rules-config="['isRequired']"
-                          :outlined="true"
-                          border-black
-                          is-square
-                        />
-                      </div>
-
-                      <div class="col-md-6 col-12">
-                        <SelectElement
-                          :model-value="newAddress.district"
-                          @update:model-value="(val: string) => (newAddress.district = val)"
-                          label="Distrito"
-                          :options="districtOptionsFilter"
-                          :rules-config="['isRequired']"
-                          :outlined="true"
-                          border-black
-                          is-square
-                        />
-                      </div>
-                    </div>
-
-                    <div class="col-12 q-mt-lg">
-                      <div class="text-subtitle1 text-weight-medium">
-                        Indica tu dirección en el mapa
-                      </div>
-                      <div class="text-grey-7 q-mb-md">
-                        Mueve el marcador hasta el punto exacto donde deseas recibir tu pedido.
-                      </div>
-                      <div id="map" style="height: calc(400px - 50px)"></div>
-                    </div>
-
-                    <div class="q-mt-lg">
-                      <q-btn
-                        type="submit"
-                        class="bg-secondary text-white q-px-xl q-py-md full-width text-weight-regular"
-                        label="Crear dirección"
-                        flat
-                      />
-                    </div>
-                  </q-form>
+                  <NewAddress />
                 </q-tab-panel>
               </q-tab-panels>
             </template>
@@ -188,30 +88,19 @@
   </q-page>
 </template>
 <script setup lang="ts">
-import L from 'leaflet';
-import type { Marker } from 'leaflet';
-
 import 'leaflet/dist/leaflet.css';
-import _ from 'lodash';
 import { useRouter, useRoute } from 'vue-router';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import InputElement from 'src/components/elements/Input.vue';
-import SelectElement from 'src/components/elements/Select.vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import ProfileEdit from 'src/components/account/ProfileEdit.vue';
-import type { SelectOption } from 'src/types/select-option';
-import type { Address } from 'src/types/address';
-import { departments } from 'boot/ubigeo';
-import { ubigeoFilterDistrict, ubigeoFilterProvince } from 'boot/filters';
 import { TabAccount } from 'src/types/tab-account';
 import { useProfileStore } from 'src/stores/profile-store';
 import type { Profile } from 'src/types/profile';
 import ProfileTab from 'src/components/account/Profile.vue';
+import NewAddress from 'src/components/account/NewAddress.vue';
 
 const profileStore = useProfileStore();
 const router = useRouter();
 const route = useRoute();
-const map = ref<L.Map | null>(null);
-const marker = ref<Marker | null>(null);
 const profile = ref<Profile | null>(null);
 
 const tab = ref('profile');
@@ -220,33 +109,11 @@ const loading = ref({
   profile: false,
 });
 
-const departmentOptions = computed(() => {
-  const dataFilter: SelectOption[] = [];
-  const data = departments;
-  Object.keys(data).forEach((key: string) => {
-    dataFilter.push({
-      name: data[key]!,
-      id: String(key),
-    });
-  });
-
-  const result = _.orderBy(dataFilter, ['value']);
-  return result;
-});
-
-const provinceOptionsFilter = computed(() => {
-  return ubigeoFilterProvince(newAddress.value.department);
-});
-
-const districtOptionsFilter = computed(() => {
-  return ubigeoFilterDistrict(newAddress.value.province);
-});
-
 onMounted(async () => {
   await nextTick();
   if (route.params.section === 'addresses-add') {
-    onLoadMap();
-    onSetMarker();
+    // onLoadMap();
+    // onSetMarker();
   }
 });
 
@@ -255,8 +122,8 @@ const onNavigateSection = async (path: string) => {
   await onSetTab();
   if (path === 'addresses-add') {
     await nextTick();
-    onLoadMap();
-    onSetMarker();
+    // onLoadMap();
+    // onSetMarker();
   }
 };
 
@@ -277,53 +144,6 @@ const onSetTab = async () => {
   }
 };
 
-const onLoadMap = () => {
-  //if (!map.value) return;
-
-  map.value = L.map('map', { zoomControl: false }).setView(
-    [-12.046643864202451, -77.04341310851444],
-    12,
-  );
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-  }).addTo(map.value as L.Map);
-
-  L.control.zoom({ position: 'bottomright' }).addTo(map.value as L.Map);
-};
-
-const onSetMarker = () => {
-  if (!map.value) return;
-
-  marker.value = L.marker([-12.053845, -77.044596], { draggable: true })
-    .addTo(map.value as L.Map)
-    .bindPopup('🏠 Dirección de envío.');
-
-  // console.log(marker.value.getLatLng());
-};
-
-const onUpdateDepartment = (val: string) => {
-  newAddress.value.department = val;
-  newAddress.value.province = null;
-  newAddress.value.district = null;
-};
-
-const onUpdateProvince = (val: string) => {
-  newAddress.value.province = val;
-  newAddress.value.district = null;
-};
-
-const newAddress = ref<Address>({
-  address: 'Av. Caminos del Inca 22, Santiago de Surco 15039',
-  reference: 'A 2 cuadras de la municipalidad',
-  phone: '984852214',
-  department: null,
-  province: null,
-  district: null,
-});
-
-const onAddAddress = (): void => {};
-
 const findProfile = async () => {
   loading.value.profile = true;
   try {
@@ -337,12 +157,7 @@ const findProfile = async () => {
 
 watch(
   () => route.params.section,
-  async (val) => {
-    console.log(val);
-    if (val === 'profile-edit' || val === 'profile') {
-      loading.value.profile = true;
-      await findProfile();
-    }
+  async () => {
     await onSetTab();
   },
   { immediate: true },
@@ -350,11 +165,12 @@ watch(
 
 watch(
   () => tab.value,
-  () => {
-    if (tab.value === 'profile-edit' || tab.value === 'profile') {
-      loading.value.profile = true;
+  async (val) => {
+    if (val === 'profile-edit' || val === 'profile') {
+      await findProfile();
     }
   },
+  { immediate: true },
 );
 
 watch(

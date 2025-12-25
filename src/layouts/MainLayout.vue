@@ -352,7 +352,6 @@ watch(
 watch(
   () => authStore.isAuthenticated,
   async (newValue: boolean) => {
-    console.log(newValue);
     if (newValue) {
       await fetchActiveCart();
     }

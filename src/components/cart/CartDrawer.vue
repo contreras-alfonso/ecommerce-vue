@@ -82,6 +82,7 @@ const onClose = (): void => {
 };
 
 const onBuy = async () => {
+  onClose();
   await router.push('/cart/checkout');
 };
 

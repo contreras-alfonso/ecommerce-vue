@@ -101,7 +101,6 @@ const variantsLength = ref(props.product.variants.length);
 
 const currentImage = computed(() => {
   const variantByActiveIndex = props.product.variants[activeIndex.value];
-  console.log(variantByActiveIndex);
   const findImage = props.product.colorImages.find(
     (colorImage) => colorImage.color.id === variantByActiveIndex?.color?.id,
   )?.url;

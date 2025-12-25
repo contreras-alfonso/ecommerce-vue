@@ -12,6 +12,7 @@
             spinner-size="sm"
             :src="localItem.imageUrl"
             width="80px"
+            style="height: 80px;"
             class="cursor-pointer"
           />
         </div>

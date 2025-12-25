@@ -19,6 +19,12 @@ export const useProfileStore = defineStore('profile', {
       return data;
     },
 
+    async update(payload: Profile) {
+      const { data } = await api.put<Profile>(`/api/profile`, payload);
+      this.profile = data;
+      return data;
+    },
+
     clear() {
       this.profile = null;
     },

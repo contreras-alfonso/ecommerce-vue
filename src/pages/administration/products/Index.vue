@@ -67,6 +67,7 @@
                 <q-td v-if="col.name == 'colorImage'" :key="col.name" :props="props">
                   <q-img
                     width="60px"
+                    style="height: 60px;"
                     spinner-color="grey"
                     spinner-size="sm"
                     loading="lazy"
