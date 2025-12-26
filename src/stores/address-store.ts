@@ -38,7 +38,7 @@ export const useAddressStore = defineStore('address', {
     },
 
     async delete(id: string) {
-      await api.delete<Address>(`/api/address/${id}`);
+      await api.delete<Address>(`/api/addresses/${id}`);
       this.addresses = this.addresses.filter((address) => address.id !== id);
     },
 

@@ -15,7 +15,14 @@
             </div>
 
             <div class="">
-              <q-btn size="sm" round class="bg-red text-white q-pa-sm" icon="delete_forever" flat />
+              <q-btn
+                @click="onHandleDelete(address?.id ?? '')"
+                size="sm"
+                round
+                class="bg-red text-white q-pa-sm"
+                icon="delete_forever"
+                flat
+              />
             </div>
           </div>
         </div>
@@ -27,7 +34,7 @@
     <q-card-section>
       <div class="text-subtitle2">
         Referencia:
-        <span class="text-secondary text-weight-regular">{{ address?.reference }}</span>
+        <span class="text-secondary text-weight-regular">{{ address?.reference || '-' }}</span>
       </div>
       <div class="text-subtitle2">
         Celular: <span class="text-secondary text-weight-regular">{{ address?.phone }}</span>
@@ -46,10 +53,58 @@
       </q-badge>
     </q-card-section>
   </q-card>
+
+  <confirm-delete
+    v-if="dialogs.delete.isOpen"
+    msg="la dirección"
+    @on-delete="onDeleteAddress"
+    @on-close="onCloseDeleteDialog"
+  />
 </template>
 <script setup lang="ts">
+import { ref } from 'vue';
 import type { Address } from 'src/types/address';
+import ConfirmDelete from '../shared/ConfirmDelete.vue';
+import type { DeleteDialog } from 'src/types/delete-dialog';
+import { useHelpers } from 'src/composables/helpers';
+import { useAddressStore } from 'src/stores/address-store';
+import { useNotify } from 'src/composables/notify';
 
-const props = defineProps<{ address: Address | null }>();
+defineProps<{ address: Address | null }>();
+
+const addressStore = useAddressStore();
+const { notifySuccess } = useNotify();
+const { onSpinner, handleApiError } = useHelpers();
+const dialogs = ref<{ delete: DeleteDialog }>({
+  delete: {
+    isOpen: false,
+    entityId: null,
+  },
+});
+
+const onCloseDeleteDialog = () => {
+  dialogs.value.delete.isOpen = false;
+};
+
+const onHandleDelete = (id: string) => {
+  if (id) {
+    dialogs.value.delete.isOpen = true;
+    dialogs.value.delete.entityId = id;
+  }
+};
+
+const onDeleteAddress = async () => {
+  if (dialogs.value.delete.entityId) {
+    onSpinner(true);
+    try {
+      await addressStore.delete(dialogs.value.delete.entityId);
+      notifySuccess('Dirección eliminada correctamente');
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      onSpinner(false);
+    }
+  }
+};
 </script>
 <style lang=""></style>
