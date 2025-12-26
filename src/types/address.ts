@@ -1,5 +1,5 @@
 export interface Address {
-  id?: string;
+  id?: string | null;
   address: string;
   reference: string;
   phone: string;

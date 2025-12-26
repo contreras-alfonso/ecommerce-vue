@@ -11,7 +11,14 @@
         <div class="col-grow">
           <div class="row items-center q-col-gutter-x-sm">
             <div class="">
-              <q-btn size="sm" round class="bg-white text-secondary q-pa-sm" icon="create" flat />
+              <q-btn
+                @click="onHandleUpdate(address)"
+                size="sm"
+                round
+                class="bg-white text-secondary q-pa-sm"
+                icon="create"
+                flat
+              />
             </div>
 
             <div class="">
@@ -70,6 +77,7 @@ import { useHelpers } from 'src/composables/helpers';
 import { useAddressStore } from 'src/stores/address-store';
 import { useNotify } from 'src/composables/notify';
 
+const emit = defineEmits(['onNavigateSection']);
 defineProps<{ address: Address | null }>();
 
 const addressStore = useAddressStore();
@@ -81,6 +89,13 @@ const dialogs = ref<{ delete: DeleteDialog }>({
     entityId: null,
   },
 });
+
+const onHandleUpdate = (address: Address | null) => {
+  if (address) {
+    addressStore.setAddressToUpdate(address);
+    emit('onNavigateSection');
+  }
+};
 
 const onCloseDeleteDialog = () => {
   dialogs.value.delete.isOpen = false;

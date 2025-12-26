@@ -1,6 +1,8 @@
 <template>
-  <q-form @submit="onAddAddress">
-    <div class="text-h6 q-mb-md">Agregar nueva dirección</div>
+  <q-form @submit="onSubmitAddress">
+    <div class="text-h6 q-mb-md">
+      {{ mode === 'CREATE' ? 'Agregar nueva dirección' : 'Editar dirección' }}
+    </div>
 
     <div class="row q-col-gutter-md">
       <div class="col-md-6 col-12">
@@ -101,7 +103,7 @@
       <q-btn
         type="submit"
         class="bg-secondary text-white q-px-xl q-py-md full-width text-weight-regular"
-        label="Crear dirección"
+        :label="mode === 'CREATE' ? 'Agregar dirección' : 'Editar dirección'"
         flat
       />
     </div>
@@ -130,7 +132,9 @@ const { onSpinner, handleApiError } = useHelpers();
 const addressStore = useAddressStore();
 const map = ref<L.Map | null>(null);
 const marker = ref<Marker | null>(null);
+const mode = ref<'CREATE' | 'EDIT'>('CREATE');
 const localAddress = ref<AddressForm>({
+  id: null,
   address: '',
   reference: '',
   phone: '',
@@ -163,15 +167,58 @@ const districtOptionsFilter = computed(() => {
 });
 
 onMounted(() => {
-  onLoadMap();
-  onSetMarker();
+  if (addressStore.getAddressToUpdate) {
+    console.log(addressStore.getAddressToUpdate);
+    mode.value = 'EDIT';
+    const { lat, lng } = addressStore.getAddressToUpdate;
+    onLoadMap(lat, lng);
+    onSetMarker(lat, lng);
+    onSetAddressData();
+  } else {
+    onLoadMap();
+    onSetMarker();
+  }
 });
 
-const onLoadMap = () => {
-  map.value = L.map('map', { zoomControl: false }).setView(
-    [-12.046643864202451, -77.04341310851444],
-    12,
-  );
+const onSetAddressData = () => {
+  if (addressStore.getAddressToUpdate) {
+    const {
+      id,
+      address,
+      reference,
+      phone,
+      ubigeo,
+      default: nada,
+    } = addressStore.getAddressToUpdate;
+    localAddress.value.id = id!;
+    localAddress.value.address = address;
+    localAddress.value.reference = reference;
+    localAddress.value.phone = phone;
+    localAddress.value.default = nada;
+    setUbigeo(ubigeo);
+  }
+};
+
+const setUbigeo = (ubigeo: string) => {
+  const department = ubigeo?.substring(0, 2) || null;
+  const province = ubigeo?.substring(0, 4) || null;
+  const district = ubigeo?.substring(0, 6) || null;
+
+  localAddress.value.department = department;
+
+  localAddress.value.province = province;
+
+  localAddress.value.district = district;
+};
+
+const onLoadMap = (latitud?: number, longitud?: number) => {
+  let lat = -12.046643864202451;
+  let lng = -77.04341310851444;
+  if (latitud && longitud) {
+    lat = latitud;
+    lng = longitud;
+  }
+  map.value = L.map('map', { zoomControl: false }).setView([lat, lng], 12);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
@@ -180,10 +227,17 @@ const onLoadMap = () => {
   L.control.zoom({ position: 'bottomright' }).addTo(map.value as L.Map);
 };
 
-const onSetMarker = () => {
+const onSetMarker = (latitud?: number, longitud?: number) => {
   if (!map.value) return;
 
-  marker.value = L.marker([-12.053845, -77.044596], { draggable: true })
+  let lat = -12.053845;
+  let lng = -77.044596;
+  if (latitud && longitud) {
+    lat = latitud;
+    lng = longitud;
+  }
+
+  marker.value = L.marker([lat, lng], { draggable: true })
     .addTo(map.value as L.Map)
     .bindPopup('🏠 Dirección de envío.');
 };
@@ -199,8 +253,9 @@ const onUpdateProvince = (val: string) => {
   localAddress.value.district = null;
 };
 
-const onAddAddress = async (): Promise<void> => {
+const onSubmitAddress = async (): Promise<void> => {
   const payload: Address = {
+    id: localAddress.value?.id,
     address: localAddress.value.address,
     reference: localAddress.value.reference,
     phone: localAddress.value.phone,
@@ -216,8 +271,13 @@ const onAddAddress = async (): Promise<void> => {
 
   onSpinner(true);
   try {
-    await addressStore.create(payload);
-    notifySuccess('Dirección agregada correctamente');
+    if (addressStore.getAddressToUpdate?.id) {
+      await addressStore.update(addressStore.getAddressToUpdate.id, payload);
+      notifySuccess('Dirección actualizada correctamente');
+    } else {
+      await addressStore.create(payload);
+      notifySuccess('Dirección agregada correctamente');
+    }
     emit('onNavigateSection', 'addresses');
   } catch (error) {
     handleApiError(error);

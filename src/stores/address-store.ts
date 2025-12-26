@@ -7,10 +7,12 @@ export const useAddressStore = defineStore('address', {
   state: (): AddressState => ({
     addresses: [],
     address: null,
+    addressToUpdate: null,
   }),
 
   getters: {
     getAdresses: (state) => state.addresses,
+    getAddressToUpdate: (state) => state.addressToUpdate,
   },
 
   actions: {
@@ -40,6 +42,10 @@ export const useAddressStore = defineStore('address', {
     async delete(id: string) {
       await api.delete<Address>(`/api/addresses/${id}`);
       this.addresses = this.addresses.filter((address) => address.id !== id);
+    },
+
+    setAddressToUpdate(address: Address | null) {
+      this.addressToUpdate = address;
     },
 
     clear() {

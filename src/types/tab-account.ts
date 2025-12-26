@@ -3,5 +3,5 @@ export enum TabAccount {
   Orders = 'orders',
   Addresses = 'addresses',
   ProfileEdit = 'profile-edit',
-  AddressesAdd = 'addresses-add',
+  AddressesAdd = 'address-management',
 }

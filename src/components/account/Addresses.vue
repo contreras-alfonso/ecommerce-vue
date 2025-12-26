@@ -3,7 +3,7 @@
     <div class="text-h6 q-mb-md">Direcciones</div>
     <div v-if="addressStore.getAdresses.length > 0">
       <q-btn
-        @click="onNavigateSection('addresses-add')"
+        @click="onHandleNewAddress"
         class="bg-secondary text-white q-py-sm text-weight-regular"
         icon="add"
         label="Agregar nueva dirección"
@@ -15,8 +15,11 @@
   <template v-if="addressStore.getAdresses.length > 0">
     <div class="q-mt-sm">
       <div class="row q-col-gutter-md">
-        <div class="col-6" v-for="address in addressStore.getAdresses" :key="address.id">
-          <address-item :address="address" />
+        <div class="col-6" v-for="address in addressStore.getAdresses" :key="address.id!">
+          <address-item
+            :address="address"
+            @on-navigate-section="onNavigateSection('address-management')"
+          />
         </div>
       </div>
     </div>
@@ -27,7 +30,7 @@
     icon="add_location_alt"
     description="Aún no cuentas con direcciones, empieza agregando una nueva."
     label="Agregar nueva dirección"
-    @on-action-button="onNavigateSection('addresses-add')"
+    @on-action-button="onHandleNewAddress"
   />
 </template>
 <script setup lang="ts">
@@ -52,6 +55,11 @@ const onLoad = async () => {
 
 const fetchAddresses = async () => {
   await addressStore.fetchAll();
+};
+
+const onHandleNewAddress = () => {
+  onNavigateSection('address-management');
+  addressStore.setAddressToUpdate(null);
 };
 
 const onNavigateSection = (path: string) => {

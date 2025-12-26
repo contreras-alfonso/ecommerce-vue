@@ -42,26 +42,22 @@
                   <Addresses @on-navigate-section="onNavigateSection" />
                 </q-tab-panel>
 
-                <q-tab-panel name="addresses-add">
-                  <NewAddress @on-navigate-section="onNavigateSection"/>
+                <q-tab-panel name="address-management">
+                  <NewAddress @on-navigate-section="onNavigateSection" />
+                </q-tab-panel>
+
+                <q-tab-panel name="addresses-update">
+                  <NewAddress @on-navigate-section="onNavigateSection" />
                 </q-tab-panel>
 
                 <q-tab-panel name="orders">
                   <div class="text-h6 q-mb-md">Pedidos</div>
-                  <div class="column items-center justify-center">
-                    <div class="">
-                      <q-icon name="receipt" color="grey-5" size="xl" />
-                    </div>
-                    <div class="q-mt-md">Aún no haz realizado pedidos.</div>
-                    <div class="q-mt-md">
-                      <q-btn
-                        @click="router.push('/')"
-                        class="bg-secondary text-white q-px-xl q-py-md full-width text-weight-regular"
-                        label="Comprar productos"
-                        flat
-                      />
-                    </div>
-                  </div>
+                  <EmptyState
+                    icon="receipt"
+                    description="Aún no haz realizado pedidos."
+                    label="Comprar productos"
+                    @on-action-button="router.push('/')"
+                  />
                 </q-tab-panel>
               </q-tab-panels>
             </template>
@@ -82,6 +78,7 @@ import type { Profile } from 'src/types/profile';
 import ProfileTab from 'src/components/account/Profile.vue';
 import NewAddress from 'src/components/account/NewAddress.vue';
 import Addresses from 'src/components/account/Addresses.vue';
+import EmptyState from 'src/components/shared/EmptyState.vue';
 
 const profileStore = useProfileStore();
 const router = useRouter();
@@ -96,7 +93,7 @@ const loading = ref({
 
 onMounted(async () => {
   await nextTick();
-  if (route.params.section === 'addresses-add') {
+  if (route.params.section === 'address-management') {
     // onLoadMap();
     // onSetMarker();
   }
@@ -105,7 +102,7 @@ onMounted(async () => {
 const onNavigateSection = async (path: string) => {
   await onChangeTab(path);
   await onSetTab();
-  if (path === 'addresses-add') {
+  if (path === 'address-management') {
     await nextTick();
     // onLoadMap();
     // onSetMarker();
