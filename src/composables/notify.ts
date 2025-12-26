@@ -14,13 +14,14 @@ export function useNotify() {
     });
   };
 
-  const notifyError = (message: string) => {
+  const notifyError = (message: string, html: boolean = false) => {
     $q.notify({
       message,
       color: 'negative',
       icon: 'error',
       progress: false,
       position: 'top',
+      html,
       actions: [{ icon: 'close', color: 'white', size: 'sm', round: true }],
     });
   };

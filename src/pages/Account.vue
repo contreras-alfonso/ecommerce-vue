@@ -34,6 +34,18 @@
                   />
                 </q-tab-panel>
 
+                <q-tab-panel name="profile-edit">
+                  <ProfileEdit :profile="profile" :loading="loading.profile" />
+                </q-tab-panel>
+
+                <q-tab-panel name="addresses">
+                  <Addresses @on-navigate-section="onNavigateSection" />
+                </q-tab-panel>
+
+                <q-tab-panel name="addresses-add">
+                  <NewAddress @on-navigate-section="onNavigateSection"/>
+                </q-tab-panel>
+
                 <q-tab-panel name="orders">
                   <div class="text-h6 q-mb-md">Pedidos</div>
                   <div class="column items-center justify-center">
@@ -50,18 +62,6 @@
                       />
                     </div>
                   </div>
-                </q-tab-panel>
-
-                <q-tab-panel name="addresses">
-                  <Addresses @on-navigate-section="onNavigateSection" />
-                </q-tab-panel>
-
-                <q-tab-panel name="profile-edit">
-                  <ProfileEdit :profile="profile" :loading="loading.profile" />
-                </q-tab-panel>
-
-                <q-tab-panel name="addresses-add">
-                  <NewAddress />
                 </q-tab-panel>
               </q-tab-panels>
             </template>

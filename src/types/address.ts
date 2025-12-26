@@ -1,10 +1,10 @@
 export interface Address {
-  id: string;
+  id?: string;
   address: string;
   reference: string;
   phone: string;
-  isDefault: boolean;
-  ubigeo: number;
+  default: boolean;
+  ubigeo: string;
   lat: number;
   lng: number;
 }

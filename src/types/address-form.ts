@@ -5,7 +5,7 @@ export interface AddressForm {
   department: string | null;
   province: string | null;
   district: string | null;
-  isDefault: boolean;
+  default: boolean;
   lat?: number;
   lng?: number;
 }

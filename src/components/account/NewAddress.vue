@@ -6,8 +6,8 @@
       <div class="col-md-6 col-12">
         <InputElement
           label="Dirección"
-          :model-value="newAddress.address"
-          @update:model-value="(val: string) => (newAddress.address = val)"
+          :model-value="localAddress.address"
+          @update:model-value="(val: string) => (localAddress.address = val)"
           :outlined="true"
           bg-color="white"
           border-black
@@ -19,8 +19,8 @@
       <div class="col-md-6 col-12">
         <InputElement
           label="Referencia (Opcional)"
-          :model-value="newAddress.reference"
-          @update:model-value="(val: string) => (newAddress.reference = val)"
+          :model-value="localAddress.reference"
+          @update:model-value="(val: string) => (localAddress.reference = val)"
           :outlined="true"
           bg-color="white"
           border-black
@@ -31,8 +31,8 @@
       <div class="col-md-6 col-12">
         <InputElement
           label="Celular"
-          :model-value="newAddress.phone"
-          @update:model-value="(val: string) => (newAddress.phone = val)"
+          :model-value="localAddress.phone"
+          @update:model-value="(val: string) => (localAddress.phone = val)"
           :outlined="true"
           bg-color="white"
           border-black
@@ -43,7 +43,7 @@
 
       <div class="col-md-6 col-12">
         <SelectElement
-          :model-value="newAddress.department"
+          :model-value="localAddress.department"
           @update:model-value="(val: string) => onUpdateDepartment(val)"
           label="Departamento"
           :options="departmentOptions"
@@ -56,7 +56,7 @@
 
       <div class="col-md-6 col-12">
         <SelectElement
-          :model-value="newAddress.province"
+          :model-value="localAddress.province"
           @update:model-value="(val: string) => onUpdateProvince(val)"
           label="Provincia"
           :options="provinceOptionsFilter"
@@ -69,8 +69,8 @@
 
       <div class="col-md-6 col-12">
         <SelectElement
-          :model-value="newAddress.district"
-          @update:model-value="(val: string) => (newAddress.district = val)"
+          :model-value="localAddress.district"
+          @update:model-value="(val: string) => (localAddress.district = val)"
           label="Distrito"
           :options="districtOptionsFilter"
           :rules-config="['isRequired']"
@@ -82,7 +82,7 @@
 
       <div>
         <q-toggle
-          v-model="newAddress.isDefault"
+          v-model="localAddress.default"
           color="green"
           label="Establecer como dirección principal"
         />
@@ -118,18 +118,26 @@ import type { SelectOption } from 'src/types/select-option';
 import { departments } from 'boot/ubigeo';
 import { ubigeoFilterDistrict, ubigeoFilterProvince } from 'boot/filters';
 import type { AddressForm } from 'src/types/address-form';
-import type { AddressRequest } from 'src/types/address-request';
+import type { Address } from 'src/types/address';
+import { useAddressStore } from 'src/stores/address-store';
+import { useHelpers } from 'src/composables/helpers';
+import { useNotify } from 'src/composables/notify';
 
+const emit = defineEmits(['onNavigateSection']);
+
+const { notifySuccess } = useNotify();
+const { onSpinner, handleApiError } = useHelpers();
+const addressStore = useAddressStore();
 const map = ref<L.Map | null>(null);
 const marker = ref<Marker | null>(null);
-const newAddress = ref<AddressForm>({
-  address: 'Av. Caminos del Inca 22, Santiago de Surco 15039',
-  reference: 'A 2 cuadras de la municipalidad',
-  phone: '984852214',
+const localAddress = ref<AddressForm>({
+  address: '',
+  reference: '',
+  phone: '',
   department: null,
   province: null,
   district: null,
-  isDefault: false,
+  default: false,
 });
 
 const departmentOptions = computed(() => {
@@ -147,11 +155,11 @@ const departmentOptions = computed(() => {
 });
 
 const provinceOptionsFilter = computed(() => {
-  return ubigeoFilterProvince(newAddress.value.department);
+  return ubigeoFilterProvince(localAddress.value.department);
 });
 
 const districtOptionsFilter = computed(() => {
-  return ubigeoFilterDistrict(newAddress.value.province);
+  return ubigeoFilterDistrict(localAddress.value.province);
 });
 
 onMounted(() => {
@@ -160,8 +168,6 @@ onMounted(() => {
 });
 
 const onLoadMap = () => {
-  //if (!map.value) return;
-
   map.value = L.map('map', { zoomControl: false }).setView(
     [-12.046643864202451, -77.04341310851444],
     12,
@@ -180,34 +186,43 @@ const onSetMarker = () => {
   marker.value = L.marker([-12.053845, -77.044596], { draggable: true })
     .addTo(map.value as L.Map)
     .bindPopup('🏠 Dirección de envío.');
-
-  // console.log(marker.value.getLatLng());
 };
 
 const onUpdateDepartment = (val: string) => {
-  newAddress.value.department = val;
-  newAddress.value.province = null;
-  newAddress.value.district = null;
+  localAddress.value.department = val;
+  localAddress.value.province = null;
+  localAddress.value.district = null;
 };
 
 const onUpdateProvince = (val: string) => {
-  newAddress.value.province = val;
-  newAddress.value.district = null;
+  localAddress.value.province = val;
+  localAddress.value.district = null;
 };
 
-const onAddAddress = (): void => {
-  const payload: AddressRequest = {
-    address: newAddress.value.address,
-    reference: newAddress.value.reference,
-    phone: newAddress.value.phone,
-    ubigeo: newAddress.value.district!,
-    isDefault: newAddress.value.isDefault,
+const onAddAddress = async (): Promise<void> => {
+  const payload: Address = {
+    address: localAddress.value.address,
+    reference: localAddress.value.reference,
+    phone: localAddress.value.phone,
+    ubigeo: localAddress.value.district!,
+    default: localAddress.value.default,
     lat: 0,
     lng: 0,
   };
   if (marker.value?.getLatLng()) {
     payload.lat = marker.value?.getLatLng().lat;
     payload.lng = marker.value?.getLatLng().lng;
+  }
+
+  onSpinner(true);
+  try {
+    await addressStore.create(payload);
+    notifySuccess('Dirección agregada correctamente');
+    emit('onNavigateSection', 'addresses');
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    onSpinner(false);
   }
 };
 </script>

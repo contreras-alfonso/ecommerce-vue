@@ -15,18 +15,24 @@ export const useAddressStore = defineStore('address', {
 
   actions: {
     async fetchAll() {
-      const { data } = await api.get<Address[]>(`/api/address`);
+      const { data } = await api.get<Address[]>(`/api/addresses`);
       this.addresses = data;
       return data;
     },
 
     async fetchById(id: string) {
-      const { data } = await api.get<Address>(`/api/address/${id}`);
+      const { data } = await api.get<Address>(`/api/addresses/${id}`);
       this.address = data;
     },
 
+    async create(address: Address) {
+      const { data } = await api.post<Address>(`/api/addresses`, address);
+      this.addresses.push(data);
+      return data;
+    },
+
     async update(id: string, payload: Address) {
-      const { data } = await api.put<Address>(`/api/address/${id}`, payload);
+      const { data } = await api.put<Address>(`/api/addresses/${id}`, payload);
       const findIndex = this.addresses.findIndex((address) => address.id === id);
       if (findIndex !== -1) this.addresses[findIndex] = data;
     },

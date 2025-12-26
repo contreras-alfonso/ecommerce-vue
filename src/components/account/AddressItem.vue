@@ -1,10 +1,10 @@
 <template>
-  <q-card class="shadow-1">
+  <q-card class="shadow-1 full-height">
     <q-card-section class="bg-secondary text-white">
       <div class="row items-center">
         <div class="col">
-          <div class="text-subtitle1">
-            <q-icon size="sm" name="fmd_good" /> {{ address?.address }}
+          <div class="text-subtitle">
+            <q-icon size="xs" name="fmd_good" /> {{ address?.address }}
           </div>
         </div>
 
@@ -37,7 +37,7 @@
       </div>
 
       <q-badge
-        v-if="address?.isDefault"
+        v-if="address?.default"
         class="q-px-md q-py-xs text-caption q-mt-sm"
         rounded
         color="primary"
@@ -48,7 +48,7 @@
   </q-card>
 </template>
 <script setup lang="ts">
-import { Address } from 'src/types/address';
+import type { Address } from 'src/types/address';
 
 const props = defineProps<{ address: Address | null }>();
 </script>
