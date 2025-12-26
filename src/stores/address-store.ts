@@ -8,14 +8,21 @@ export const useAddressStore = defineStore('address', {
     addresses: [],
     address: null,
     addressToUpdate: null,
+    countAddresses: 0,
   }),
 
   getters: {
     getAdresses: (state) => state.addresses,
     getAddressToUpdate: (state) => state.addressToUpdate,
+    getCountAddresses: (state) => state.countAddresses,
   },
 
   actions: {
+    async countAll() {
+      const { data } = await api.get<number>(`/api/addresses/count`);
+      this.countAddresses = data;
+    },
+
     async fetchAll() {
       const { data } = await api.get<Address[]>(`/api/addresses`);
       this.addresses = data;
@@ -40,8 +47,9 @@ export const useAddressStore = defineStore('address', {
     },
 
     async delete(id: string) {
-      await api.delete<Address>(`/api/addresses/${id}`);
+      const { data } = await api.delete<Address[]>(`/api/addresses/${id}`);
       this.addresses = this.addresses.filter((address) => address.id !== id);
+      this.addresses = data;
     },
 
     setAddressToUpdate(address: Address | null) {

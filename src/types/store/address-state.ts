@@ -4,4 +4,5 @@ export interface AddressState {
   addresses: Address[];
   address: Address | null;
   addressToUpdate: Address | null;
+  countAddresses: number;
 }

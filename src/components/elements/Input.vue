@@ -17,8 +17,7 @@
       },
     ]"
     :readonly="localReadOnly"
-    :maxlength="maxLength && maxLength"
-    :counter="maxLength ? true : false"
+    :maxlength="maxLength ? maxLength : undefined"
     :rounded="isRounded ? true : false"
     :square="isSquare ? true : false"
     :type="

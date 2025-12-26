@@ -3,7 +3,7 @@
     <ProfileEditSkeleton />
   </template>
   <q-form v-else @submit="onUpdateProfile">
-    <div class="text-h6 q-mb-md">Modificar datos</div>
+    <div class="text-h6 q-mb-md">Modificar perfil</div>
 
     <div class="row q-col-gutter-md">
       <div class="col-md-6 col-12">
@@ -91,7 +91,7 @@
       <q-btn
         type="submit"
         class="bg-secondary text-white q-px-xl q-py-md full-width text-weight-regular"
-        label="Actualizar datos"
+        label="Modificar perfil"
         flat
       />
     </div>
@@ -106,9 +106,12 @@ import type { SelectOption } from 'src/types/select-option';
 import { useProfileStore } from 'src/stores/profile-store';
 import ProfileEditSkeleton from './ProfileEditSkeleton.vue';
 import { useHelpers } from 'src/composables/helpers';
+import { useNotify } from 'src/composables/notify';
 
+const emit = defineEmits(['onNavigateSection']);
 const props = defineProps<{ profile: Profile | null; loading: boolean }>();
 
+const { notifySuccess } = useNotify();
 const options = ref<{ documentType: SelectOption[] }>({
   documentType: [
     {
@@ -134,6 +137,8 @@ const onUpdateProfile = async () => {
     onSpinner(true);
     try {
       await profileStore.update(payload);
+      notifySuccess('Perfil modificado correctamente');
+      emit('onNavigateSection', 'profile');
     } catch (error) {
       handleApiError(error);
     } finally {

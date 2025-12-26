@@ -76,7 +76,7 @@ export const useAuthStore = defineStore('auth', {
           const payload = {
             token,
           };
-          const response = await api.post<AuthResponse>('/api/auth/refresh-token', payload);
+          const response = await api.post<AuthResponse>('/api/auth/verify', payload);
 
           const data = response.data;
 

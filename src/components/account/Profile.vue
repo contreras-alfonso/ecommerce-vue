@@ -8,11 +8,10 @@
       <div class="col-grow">
         <q-btn
           @click="onNavigateSection('profile-edit')"
+          class="bg-secondary text-white q-py-sm  text-weight-regular"
+          icon="cached"
+          label="Modificar perfil"
           flat
-          size="sm"
-          label="Editar"
-          class="bg-secondary text-white"
-          icon="mode"
         />
       </div>
     </div>

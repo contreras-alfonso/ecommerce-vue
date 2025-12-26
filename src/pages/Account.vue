@@ -14,7 +14,11 @@
               >
                 <q-tab name="profile" icon="person" label="Mi perfil" />
                 <q-tab name="orders" icon="local_mall" label="Pedidos (0)" />
-                <q-tab name="addresses" icon="fmd_good" label="Direcciones (2)" />
+                <q-tab
+                  name="addresses"
+                  icon="fmd_good"
+                  :label="`Direcciones (${addressStore.countAddresses})`"
+                />
               </q-tabs>
             </template>
 
@@ -35,7 +39,11 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="profile-edit">
-                  <ProfileEdit :profile="profile" :loading="loading.profile" />
+                  <ProfileEdit
+                    :profile="profile"
+                    :loading="loading.profile"
+                    @on-navigate-section="onNavigateSection"
+                  />
                 </q-tab-panel>
 
                 <q-tab-panel name="addresses">
@@ -43,11 +51,7 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="address-management">
-                  <NewAddress @on-navigate-section="onNavigateSection" />
-                </q-tab-panel>
-
-                <q-tab-panel name="addresses-update">
-                  <NewAddress @on-navigate-section="onNavigateSection" />
+                  <AddressManagement @on-navigate-section="onNavigateSection" />
                 </q-tab-panel>
 
                 <q-tab-panel name="orders">
@@ -70,16 +74,18 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css';
 import { useRouter, useRoute } from 'vue-router';
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import ProfileEdit from 'src/components/account/ProfileEdit.vue';
 import { TabAccount } from 'src/types/tab-account';
 import { useProfileStore } from 'src/stores/profile-store';
 import type { Profile } from 'src/types/profile';
 import ProfileTab from 'src/components/account/Profile.vue';
-import NewAddress from 'src/components/account/NewAddress.vue';
 import Addresses from 'src/components/account/Addresses.vue';
 import EmptyState from 'src/components/shared/EmptyState.vue';
+import AddressManagement from 'src/components/account/AddressManagement.vue';
+import { useAddressStore } from 'src/stores/address-store';
 
+const addressStore = useAddressStore();
 const profileStore = useProfileStore();
 const router = useRouter();
 const route = useRoute();
@@ -92,21 +98,22 @@ const loading = ref({
 });
 
 onMounted(async () => {
-  await nextTick();
-  if (route.params.section === 'address-management') {
-    // onLoadMap();
-    // onSetMarker();
-  }
+  await onLoad();
 });
+
+const onLoad = async () => {
+  await Promise.all([fetchCountAddresses()])
+    .then(() => {})
+    .finally(() => {});
+};
+
+const fetchCountAddresses = async () => {
+  await addressStore.countAll();
+};
 
 const onNavigateSection = async (path: string) => {
   await onChangeTab(path);
   await onSetTab();
-  if (path === 'address-management') {
-    await nextTick();
-    // onLoadMap();
-    // onSetMarker();
-  }
 };
 
 const onChangeTab = async (value: string) => {

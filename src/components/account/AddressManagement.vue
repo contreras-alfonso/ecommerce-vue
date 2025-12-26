@@ -15,6 +15,7 @@
           border-black
           is-square
           :rules-config="['isRequired']"
+          max-length="70"
         />
       </div>
 
@@ -27,6 +28,7 @@
           bg-color="white"
           border-black
           is-square
+          max-length="70"
         />
       </div>
 
@@ -168,7 +170,6 @@ const districtOptionsFilter = computed(() => {
 
 onMounted(() => {
   if (addressStore.getAddressToUpdate) {
-    console.log(addressStore.getAddressToUpdate);
     mode.value = 'EDIT';
     const { lat, lng } = addressStore.getAddressToUpdate;
     onLoadMap(lat, lng);
